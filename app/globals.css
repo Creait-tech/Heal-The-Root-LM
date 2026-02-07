@@ -2,26 +2,76 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    @apply bg-cream text-charcoal font-body antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+
+  /* Hide scrollbar on mobile for cleaner feel */
+  @media (max-width: 640px) {
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    body {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  }
+
+  /* Desktop scrollbar */
+  @media (min-width: 641px) {
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      @apply bg-cream;
+    }
+    ::-webkit-scrollbar-thumb {
+      @apply bg-soft-brown/40 rounded-full;
+    }
+  }
+
+  /* Ensure touch targets are at least 44px */
+  input[type="range"] {
+    min-height: 44px;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
+@layer components {
+  .btn-primary {
+    @apply bg-sage text-cream px-6 sm:px-8 py-3 rounded-md font-body font-medium
+           tracking-wide uppercase text-sm transition-all duration-300
+           hover:bg-deep-brown hover:shadow-lg focus-visible:outline-none
+           focus-visible:ring-2 focus-visible:ring-muted-gold focus-visible:ring-offset-2
+           focus-visible:ring-offset-cream disabled:opacity-50 disabled:cursor-not-allowed;
+  }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .btn-secondary {
+    @apply border-2 border-muted-gold text-muted-gold px-6 sm:px-8 py-3 rounded-md
+           font-body font-medium tracking-wide uppercase text-sm
+           transition-all duration-300 hover:bg-muted-gold hover:text-cream
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-muted-gold
+           focus-visible:ring-offset-2 focus-visible:ring-offset-cream
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .card {
+    @apply bg-white/80 backdrop-blur-sm rounded-xl shadow-sm border border-sage/10 p-4 sm:p-6;
   }
 }
