@@ -150,7 +150,9 @@ export const NS_EMOJI: Record<NervousSystemState, string> = {
 // --- User / Session Types ---
 export interface UserInfo {
   firstName: string;
+  lastName: string;
   email: string;
+  birthday: string; // YYYY-MM-DD
   phone?: string;
 }
 

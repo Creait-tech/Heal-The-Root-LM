@@ -125,17 +125,17 @@ export const useAppStore = create<AppStore>()(
     {
       name: 'heal-the-root-store',
       storage: createJSONStorage(() => localStorage),
-      version: 2,
+      version: 3,
       migrate: (persisted, version) => {
+        const state = persisted as AppState;
         if (version < 2) {
-          const state = persisted as AppState;
           return {
             ...state,
             sessionId: null,
             quizResultId: null,
           };
         }
-        return persisted as AppState;
+        return state;
       },
     }
   )

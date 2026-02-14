@@ -70,7 +70,9 @@ export default function AdminTestResultsPage() {
     setScoringResult(mockResult);
     setUserInfo({
       firstName: 'Test',
+      lastName: 'User',
       email: 'test@example.com',
+      birthday: '1990-05-15',
     });
 
     router.push('/results');

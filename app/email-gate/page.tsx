@@ -17,9 +17,11 @@ export default function EmailGatePage() {
 
   const [mounted, setMounted] = useState(false);
   const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [birthday, setBirthday] = useState('');
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{ firstName?: string; email?: string }>({});
+  const [errors, setErrors] = useState<{ firstName?: string; lastName?: string; email?: string; birthday?: string }>({});
 
   useEffect(() => {
     setMounted(true);
@@ -40,16 +42,31 @@ export default function EmailGatePage() {
   const nsName = NS_SHORT_NAMES[scoringResult.dominantNSState];
 
   const validate = (): boolean => {
-    const newErrors: { firstName?: string; email?: string } = {};
+    const newErrors: { firstName?: string; lastName?: string; email?: string; birthday?: string } = {};
 
     if (!firstName.trim()) {
       newErrors.firstName = 'First name is required.';
+    }
+
+    if (!lastName.trim()) {
+      newErrors.lastName = 'Last name is required.';
     }
 
     if (!email.trim()) {
       newErrors.email = 'Email is required.';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       newErrors.email = 'Please enter a valid email address.';
+    }
+
+    if (!birthday) {
+      newErrors.birthday = 'Birthday is required.';
+    } else {
+      const birthDate = new Date(birthday);
+      const today = new Date();
+      const age = today.getFullYear() - birthDate.getFullYear();
+      if (age < 13 || age > 120) {
+        newErrors.birthday = 'Please enter a valid date of birth.';
+      }
     }
 
     setErrors(newErrors);
@@ -65,7 +82,7 @@ export default function EmailGatePage() {
     trackEvent('email_submit');
 
     // Store user info
-    setUserInfo({ firstName: firstName.trim(), email: email.trim() });
+    setUserInfo({ firstName: firstName.trim(), lastName: lastName.trim(), email: email.trim(), birthday });
 
     // Calculate completion time
     const completionTimeS = assessmentStartedAt
@@ -81,7 +98,9 @@ export default function EmailGatePage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         firstName: firstName.trim(),
+        lastName: lastName.trim(),
         email: email.trim(),
+        birthday,
         answers,
         scoringResult,
         sessionId,
@@ -173,6 +192,47 @@ export default function EmailGatePage() {
               />
               {errors.firstName && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400 font-body">{errors.firstName}</p>
+              )}
+            </div>
+
+            {/* Last Name */}
+            <div>
+              <label htmlFor="lastName" className="block font-body text-sm text-charcoal dark:text-dark-text mb-1.5">
+                Last Name
+              </label>
+              <input
+                id="lastName"
+                type="text"
+                value={lastName}
+                onChange={(e) => {
+                  setLastName(e.target.value);
+                  if (errors.lastName) setErrors((prev) => ({ ...prev, lastName: undefined }));
+                }}
+                placeholder="Your last name"
+                className="w-full bg-white/60 dark:bg-dark-surface border border-sage/20 dark:border-dark-border rounded-lg px-4 py-3 font-body text-charcoal dark:text-dark-text placeholder:text-soft-brown/40 dark:placeholder:text-dark-muted/50 focus:outline-none focus:ring-2 focus:ring-muted-gold/50 focus:border-muted-gold transition-colors"
+              />
+              {errors.lastName && (
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400 font-body">{errors.lastName}</p>
+              )}
+            </div>
+
+            {/* Birthday */}
+            <div>
+              <label htmlFor="birthday" className="block font-body text-sm text-charcoal dark:text-dark-text mb-1.5">
+                Birthday
+              </label>
+              <input
+                id="birthday"
+                type="date"
+                value={birthday}
+                onChange={(e) => {
+                  setBirthday(e.target.value);
+                  if (errors.birthday) setErrors((prev) => ({ ...prev, birthday: undefined }));
+                }}
+                className="w-full bg-white/60 dark:bg-dark-surface border border-sage/20 dark:border-dark-border rounded-lg px-4 py-3 font-body text-charcoal dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-muted-gold/50 focus:border-muted-gold transition-colors"
+              />
+              {errors.birthday && (
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400 font-body">{errors.birthday}</p>
               )}
             </div>
 

@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Button from '@/components/ui/Button';
 import CollapsibleSection from '@/components/ui/CollapsibleSection';
 import ThemeToggle from '@/components/ui/ThemeToggle';
+import PDFReport from '@/components/pdf/PDFReport';
 import {
   IDENTITY_PROFILES,
   NS_PATTERN_CONTENT,
@@ -22,11 +23,98 @@ import {
   IDENTITY_DISPLAY_NAMES,
   NS_DISPLAY_NAMES,
   NS_SHORT_NAMES,
-  IDENTITY_EMOJI,
-  NS_EMOJI,
 } from '@/lib/types';
-import type { NervousSystemState } from '@/lib/types';
+import type { IdentityType, NervousSystemState } from '@/lib/types';
 import { trackEvent } from '@/lib/analytics';
+
+// --- SVG Icons (no emojis) ---
+
+const IdentityIcon = ({ type, className = '' }: { type: IdentityType; className?: string }) => {
+  const icons: Record<IdentityType, JSX.Element> = {
+    ACHIEVER: (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+      </svg>
+    ),
+    ANCHOR: (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+      </svg>
+    ),
+    OPERATOR: (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+      </svg>
+    ),
+    STRATEGIST: (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <circle cx="12" cy="12" r="6" />
+        <circle cx="12" cy="12" r="2" />
+      </svg>
+    ),
+    BURNER: (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+      </svg>
+    ),
+  };
+  return icons[type];
+};
+
+const NSIcon = ({ state, className = '' }: { state: NervousSystemState; className?: string }) => {
+  const icons: Record<NervousSystemState, JSX.Element> = {
+    SYMP: (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+      </svg>
+    ),
+    DORSAL: (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+      </svg>
+    ),
+    VENTRAL: (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="5" />
+        <line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" />
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+        <line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" />
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+      </svg>
+    ),
+  };
+  return icons[state];
+};
+
+// --- Section icons ---
+const CombinationIcon = ({ className = '' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 3v18M3 12h18M7.5 7.5l9 9M16.5 7.5l-9 9" />
+  </svg>
+);
+
+const RegulatedIcon = ({ className = '' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 22c4-4 8-7.5 8-12a8 8 0 10-16 0c0 4.5 4 8 8 12z" />
+    <circle cx="12" cy="10" r="3" />
+  </svg>
+);
+
+const MeditationIcon = ({ className = '' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
+    <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+    <line x1="9" y1="9" x2="9.01" y2="9" />
+    <line x1="15" y1="9" x2="15.01" y2="9" />
+  </svg>
+);
+
+const ToolsIcon = ({ className = '' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" />
+  </svg>
+);
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 30 },
@@ -61,7 +149,6 @@ export default function ResultsPage() {
     });
   }, [mounted, scoringResult, userInfo, router]);
 
-  // Show sticky CTA after user scrolls past identity section
   useEffect(() => {
     if (!mounted || !scoringResult || !userInfo) return;
     const handleScroll = () => {
@@ -88,18 +175,6 @@ export default function ResultsPage() {
   const teaserItems = lockedContentTeaser[primary.type];
   const communityUrl = 'https://www.skool.com/heal-the-root-3617/about?ref=d79428c015764fd8ac7a155f7426efe9';
 
-  // Ventral access calculation
-  const ventralResult = nsResults.find((r) => r.state === 'VENTRAL');
-  const ventralPct = ventralResult?.pct ?? 0;
-  const ventralLevel = ventralPct >= 60 ? 'strong' : ventralPct >= 40 ? 'developing' : 'limited';
-
-  const ventralLabels = {
-    strong: { title: 'Strong Ventral Access', color: 'text-sage dark:text-dark-sage', ringColor: '#4A5D4F', desc: 'Your nervous system shows meaningful capacity for regulation and social engagement. You have access to calm, connection, and clear thinking — the work now is expanding that window.' },
-    developing: { title: 'Developing Ventral Access', color: 'text-muted-gold', ringColor: '#C8A96E', desc: 'Your system moves between survival states and ventral regulation. You can access calm and connection, but your window of tolerance is still being built. This is exactly where the deepest growth happens.' },
-    limited: { title: 'Survival-Dominant Pattern', color: 'text-soft-brown dark:text-dark-muted', ringColor: '#6B5B4E', desc: 'Your nervous system is spending most of its energy in survival states. This isn\'t a failing — it\'s your system doing exactly what it was trained to do. The path forward starts with building safety, not pushing harder.' },
-  };
-  const ventral = ventralLabels[ventralLevel];
-
   // NS state bar colors
   const nsBarColor = (state: NervousSystemState) => {
     if (state === 'VENTRAL') return 'bg-gradient-to-r from-sage to-sage/80';
@@ -114,7 +189,7 @@ export default function ResultsPage() {
     : `${IDENTITY_DISPLAY_NAMES[primary.type]}`;
 
   const handleSavePDF = async () => {
-    const element = document.getElementById('results-content');
+    const element = document.getElementById('pdf-report');
     if (!element) return;
     trackEvent('pdf_download');
     const html2pdf = (await import('html2pdf.js')).default;
@@ -123,7 +198,7 @@ export default function ResultsPage() {
         margin: [10, 10, 10, 10],
         filename: `survival-identity-profile-${firstName}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
+        html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: 794 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       })
       .from(element)
@@ -142,7 +217,7 @@ export default function ResultsPage() {
       try {
         await navigator.share(shareData);
       } catch {
-        // User cancelled or share failed
+        // User cancelled
       }
     } else {
       await navigator.clipboard.writeText(window.location.href);
@@ -159,6 +234,13 @@ export default function ResultsPage() {
   return (
     <div className="min-h-screen bg-cream dark:bg-dark-bg transition-colors duration-300">
       <ThemeToggle />
+
+      {/* Hidden PDF Report for download */}
+      <PDFReport
+        firstName={firstName}
+        lastName={userInfo.lastName}
+        scoringResult={scoringResult}
+      />
 
       {/* Sticky bottom CTA bar */}
       <AnimatePresence>
@@ -180,12 +262,7 @@ export default function ResultsPage() {
                   $22/mo &middot; Cancel anytime
                 </p>
               </div>
-              <a
-                href={communityUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-shrink-0 w-full sm:w-auto"
-              >
+              <a href={communityUrl} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 w-full sm:w-auto">
                 <Button className="w-full sm:w-auto text-sm px-6 py-2.5">
                   {cta.buttonText} &rarr;
                 </Button>
@@ -212,65 +289,20 @@ export default function ResultsPage() {
           <h1 className="font-heading text-3xl md:text-4xl lg:text-5xl text-deep-brown dark:text-dark-text mb-6">
             {firstName}, here&apos;s your profile
           </h1>
-          <div className="mb-4">
+          <div className="mb-4 flex items-center justify-center gap-3">
+            <IdentityIcon type={primary.type} className="w-7 h-7 text-sage dark:text-dark-sage" />
             <span className="font-heading text-2xl md:text-3xl text-sage dark:text-dark-sage">
-              {IDENTITY_EMOJI[primary.type]} {IDENTITY_DISPLAY_NAMES[primary.type]}
+              {IDENTITY_DISPLAY_NAMES[primary.type]}
             </span>
           </div>
           <span className="inline-block bg-sage/10 dark:bg-dark-sage/20 text-sage dark:text-dark-sage font-body text-sm px-4 py-2 rounded-full border border-sage/20 dark:border-dark-sage/30">
             {identityBadge}
           </span>
-          <p className="mt-4 font-body text-soft-brown dark:text-dark-muted text-sm">
-            {NS_EMOJI[dominantNSState]} {NS_SHORT_NAMES[dominantNSState]} Dominant
-          </p>
-        </motion.section>
-
-        {/* Ventral Regulation Ring (always visible) */}
-        <motion.section
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-50px' }}
-          variants={sectionVariants}
-          className="mb-12"
-        >
-          <div className="bg-white/60 dark:bg-dark-card/60 rounded-xl p-6 md:p-8 border border-sage/10 dark:border-dark-border">
-            <h2 className="font-heading text-2xl md:text-3xl text-deep-brown dark:text-dark-text mb-6 text-center">
-              Your Ventral Regulation Status
-            </h2>
-            <div className="flex flex-col items-center">
-              <div className="relative w-36 h-36 sm:w-44 sm:h-44 mb-6">
-                <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
-                  <circle cx="60" cy="60" r="52" fill="none" stroke="currentColor" strokeWidth="10" className="text-sage/10 dark:text-dark-border" />
-                  <motion.circle
-                    cx="60" cy="60" r="52" fill="none"
-                    stroke={ventral.ringColor}
-                    strokeWidth="10" strokeLinecap="round"
-                    strokeDasharray={`${2 * Math.PI * 52}`}
-                    initial={{ strokeDashoffset: 2 * Math.PI * 52 }}
-                    whileInView={{ strokeDashoffset: 2 * Math.PI * 52 * (1 - ventralPct / 100) }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1.2, ease: "easeOut" as const, delay: 0.3 }}
-                  />
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.8, duration: 0.5 }}
-                    className={`font-heading text-3xl sm:text-4xl ${ventral.color}`}
-                  >
-                    {ventralPct}%
-                  </motion.span>
-                  <span className="font-body text-xs text-soft-brown dark:text-dark-muted">Ventral Access</span>
-                </div>
-              </div>
-
-              <h3 className={`font-heading text-xl ${ventral.color} mb-3`}>{ventral.title}</h3>
-              <p className="font-body text-charcoal/80 dark:text-dark-text/80 text-sm sm:text-base leading-relaxed text-center max-w-lg">
-                {ventral.desc}
-              </p>
-            </div>
+          <div className="mt-4 flex items-center justify-center gap-2">
+            <NSIcon state={dominantNSState} className="w-4 h-4 text-soft-brown dark:text-dark-muted" />
+            <p className="font-body text-soft-brown dark:text-dark-muted text-sm">
+              {NS_SHORT_NAMES[dominantNSState]} Dominant
+            </p>
           </div>
         </motion.section>
 
@@ -292,10 +324,11 @@ export default function ResultsPage() {
 
               return (
                 <div key={ns.state} className="flex items-center gap-3 sm:gap-4">
-                  <span className={`font-body text-xs sm:text-sm w-28 sm:w-36 text-right flex-shrink-0 leading-tight ${
+                  <span className={`font-body text-xs sm:text-sm w-28 sm:w-36 text-right flex-shrink-0 leading-tight flex items-center justify-end gap-1.5 ${
                     isHighest ? 'text-deep-brown dark:text-dark-text font-semibold' : 'text-soft-brown dark:text-dark-muted'
                   }`}>
-                    {NS_EMOJI[ns.state]} {ns.name}
+                    <NSIcon state={ns.state} className="w-3.5 h-3.5 inline-block" />
+                    {ns.name}
                   </span>
                   <div className="flex-1 h-8 sm:h-10 bg-sage/5 dark:bg-dark-surface rounded-lg overflow-hidden relative">
                     <motion.div
@@ -303,7 +336,7 @@ export default function ResultsPage() {
                       initial={{ width: 0 }}
                       whileInView={{ width: `${Math.max(barPercent, 8)}%` }}
                       viewport={{ once: true }}
-                      transition={{ duration: 0.8, ease: "easeOut" as const, delay: 0.2 }}
+                      transition={{ duration: 0.8, ease: 'easeOut' as const, delay: 0.2 }}
                     />
                     <motion.span
                       initial={{ opacity: 0 }}
@@ -349,7 +382,7 @@ export default function ResultsPage() {
           <CollapsibleSection
             title="Your Survival Identity"
             subtitle={IDENTITY_DISPLAY_NAMES[primary.type]}
-            icon={IDENTITY_EMOJI[primary.type]}
+            icon={<IdentityIcon type={primary.type} className="w-5 h-5 text-sage dark:text-dark-sage" />}
             accentColor="border-sage/20 dark:border-dark-border"
             defaultOpen
           >
@@ -372,7 +405,7 @@ export default function ResultsPage() {
           <CollapsibleSection
             title="Your Nervous System Pattern"
             subtitle={`${NS_DISPLAY_NAMES[dominantNSState]} — ${NS_SHORT_NAMES[dominantNSState]}`}
-            icon={NS_EMOJI[dominantNSState]}
+            icon={<NSIcon state={dominantNSState} className="w-5 h-5 text-sage dark:text-dark-sage" />}
             accentColor="border-sage/20 dark:border-dark-border"
           >
             <div className="font-body text-charcoal/80 dark:text-dark-text/80 leading-relaxed space-y-3">
@@ -386,7 +419,7 @@ export default function ResultsPage() {
           <CollapsibleSection
             title="How They Work Together"
             subtitle={`${IDENTITY_DISPLAY_NAMES[primary.type]} × ${NS_SHORT_NAMES[dominantNSState]}`}
-            icon="⟁"
+            icon={<CombinationIcon className="w-5 h-5 text-muted-gold" />}
             accentColor="border-muted-gold/30 dark:border-dark-border"
           >
             <span className="inline-block bg-muted-gold/10 text-muted-gold font-body text-xs px-3 py-1 rounded-full border border-muted-gold/20 mb-4">
@@ -395,59 +428,6 @@ export default function ResultsPage() {
             <div className="font-body text-charcoal/80 dark:text-dark-text/80 leading-relaxed space-y-3">
               {combination.split('\n\n').map((paragraph: string, i: number) => (
                 <p key={i}>{paragraph}</p>
-              ))}
-            </div>
-          </CollapsibleSection>
-
-          {/* What This Looks Like Regulated */}
-          <CollapsibleSection
-            title="What This Looks Like Regulated"
-            subtitle="The version of you your nervous system is building toward"
-            icon="❀"
-            accentColor="border-sage/30 dark:border-dark-border"
-          >
-            <div className="bg-sage/5 dark:bg-dark-sage/10 rounded-lg p-5 border border-sage/10 dark:border-dark-sage/20">
-              <div className="font-body text-charcoal/80 dark:text-dark-text/80 leading-relaxed space-y-2">
-                {profile.regulated.split('\n\n').map((p: string, i: number) => (
-                  <p key={i}>{p}</p>
-                ))}
-              </div>
-            </div>
-          </CollapsibleSection>
-
-          {/* Meditation Recommendation */}
-          <CollapsibleSection
-            title="Your Matched Meditation"
-            subtitle={meditation.title}
-            icon="🧘"
-            accentColor="border-sage/20 dark:border-dark-border"
-          >
-            <h4 className="font-heading text-lg text-deep-brown dark:text-dark-text mb-3">{meditation.title}</h4>
-            <div className="font-body text-charcoal/80 dark:text-dark-text/80 leading-relaxed space-y-3">
-              {meditation.body.split('\n\n').map((p: string, i: number) => (
-                <p key={i}>{p}</p>
-              ))}
-            </div>
-            <a
-              href={communityUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block mt-4 font-body text-sm text-muted-gold hover:text-muted-gold/80 transition-colors"
-            >
-              Access Full Meditation Inside &rarr;
-            </a>
-          </CollapsibleSection>
-
-          {/* NS Tools */}
-          <CollapsibleSection
-            title="Regulation Tools for Your Pattern"
-            subtitle={`Techniques for ${NS_SHORT_NAMES[dominantNSState].toLowerCase()}`}
-            icon="⚙"
-            accentColor="border-sage/20 dark:border-dark-border"
-          >
-            <div className="font-body text-charcoal/80 dark:text-dark-text/80 leading-relaxed space-y-3">
-              {nsTools.split('\n\n').map((p: string, i: number) => (
-                <p key={i}>{p}</p>
               ))}
             </div>
           </CollapsibleSection>
@@ -503,7 +483,85 @@ export default function ResultsPage() {
         </motion.section>
 
         {/* ============================================= */}
-        {/* YOUR OTHER PATTERNS (expandable per-identity) */}
+        {/* MORE COLLAPSIBLE SECTIONS */}
+        {/* ============================================= */}
+        <div className="space-y-4 mb-12">
+          {/* What This Looks Like Regulated */}
+          <CollapsibleSection
+            title="What This Looks Like Regulated"
+            subtitle="The version of you your nervous system is building toward"
+            icon={<RegulatedIcon className="w-5 h-5 text-sage dark:text-dark-sage" />}
+            accentColor="border-sage/30 dark:border-dark-border"
+          >
+            <div className="bg-sage/5 dark:bg-dark-sage/10 rounded-lg p-5 border border-sage/10 dark:border-dark-sage/20">
+              <div className="font-body text-charcoal/80 dark:text-dark-text/80 leading-relaxed space-y-2">
+                {profile.regulated.split('\n\n').map((p: string, i: number) => (
+                  <p key={i}>{p}</p>
+                ))}
+              </div>
+            </div>
+          </CollapsibleSection>
+
+          {/* Meditation Recommendation */}
+          <CollapsibleSection
+            title="Your Matched Meditation"
+            subtitle={meditation.title}
+            icon={<MeditationIcon className="w-5 h-5 text-sage dark:text-dark-sage" />}
+            accentColor="border-sage/20 dark:border-dark-border"
+          >
+            <h4 className="font-heading text-lg text-deep-brown dark:text-dark-text mb-3">{meditation.title}</h4>
+            <div className="font-body text-charcoal/80 dark:text-dark-text/80 leading-relaxed space-y-3">
+              {meditation.body.split('\n\n').map((p: string, i: number) => (
+                <p key={i}>{p}</p>
+              ))}
+            </div>
+            <a
+              href={communityUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block mt-4 font-body text-sm text-muted-gold hover:text-muted-gold/80 transition-colors"
+            >
+              Access Full Meditation Inside &rarr;
+            </a>
+          </CollapsibleSection>
+
+          {/* NS Tools */}
+          <CollapsibleSection
+            title="Regulation Tools for Your Pattern"
+            subtitle={`Techniques for ${NS_SHORT_NAMES[dominantNSState].toLowerCase()}`}
+            icon={<ToolsIcon className="w-5 h-5 text-sage dark:text-dark-sage" />}
+            accentColor="border-sage/20 dark:border-dark-border"
+          >
+            <div className="font-body text-charcoal/80 dark:text-dark-text/80 leading-relaxed space-y-3">
+              {nsTools.split('\n\n').map((p: string, i: number) => (
+                <p key={i}>{p}</p>
+              ))}
+            </div>
+          </CollapsibleSection>
+        </div>
+
+        {/* ============================================= */}
+        {/* PDF DOWNLOAD */}
+        {/* ============================================= */}
+        <motion.section
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-50px' }}
+          variants={sectionVariants}
+          className="mb-12 text-center"
+        >
+          <Button onClick={handleSavePDF} variant="secondary" className="px-8">
+            <span className="flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Download Full Report (PDF)
+            </span>
+          </Button>
+        </motion.section>
+
+        {/* ============================================= */}
+        {/* YOUR OTHER PATTERNS */}
         {/* ============================================= */}
         <motion.section
           initial="hidden"
@@ -523,8 +581,9 @@ export default function ResultsPage() {
           <div className="space-y-3 mb-6">
             {identityResults.map((identity, i) => (
               <div key={identity.type} className="flex items-center gap-3">
-                <span className="font-body text-xs sm:text-sm w-40 text-right flex-shrink-0 truncate text-soft-brown dark:text-dark-muted">
-                  {IDENTITY_EMOJI[identity.type]} {identity.name}
+                <span className="font-body text-xs sm:text-sm w-40 text-right flex-shrink-0 truncate flex items-center justify-end gap-1.5 text-soft-brown dark:text-dark-muted">
+                  <IdentityIcon type={identity.type} className="w-3.5 h-3.5 inline-block flex-shrink-0" />
+                  {identity.name}
                 </span>
                 <div className="flex-1 h-6 bg-sage/5 dark:bg-dark-surface rounded-full overflow-hidden">
                   <motion.div
@@ -549,7 +608,7 @@ export default function ResultsPage() {
                   key={identity.type}
                   title={IDENTITY_DISPLAY_NAMES[identity.type]}
                   subtitle={`${identity.pct}% — ${otherProfile.coreBelief}`}
-                  icon={IDENTITY_EMOJI[identity.type]}
+                  icon={<IdentityIcon type={identity.type} className="w-4 h-4 text-sage/70 dark:text-dark-sage/70" />}
                   accentColor="border-sage/10 dark:border-dark-border"
                 >
                   <p className="font-body text-charcoal/80 dark:text-dark-text/80 leading-relaxed mb-4">
@@ -700,9 +759,6 @@ export default function ResultsPage() {
           className="mb-12"
         >
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button onClick={handleSavePDF} variant="secondary" className="w-full sm:w-auto">
-              Save My Results
-            </Button>
             <Button onClick={handleShare} variant="secondary" className="w-full sm:w-auto">
               Share
             </Button>

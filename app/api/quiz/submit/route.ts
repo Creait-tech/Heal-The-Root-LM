@@ -9,7 +9,9 @@ export async function POST(req: NextRequest) {
 
     const {
       firstName,
+      lastName,
       email,
+      birthday,
       answers,
       scoringResult,
       sessionId,
@@ -51,7 +53,9 @@ export async function POST(req: NextRequest) {
       .from('quiz_results')
       .insert({
         first_name: firstName,
+        last_name: lastName ?? null,
         email,
+        birthday: birthday ?? null,
         primary_identity: scoringResult.primary.type,
         secondary_identity: scoringResult.secondary?.type ?? null,
         dominant_ns_state: scoringResult.dominantNSState,
@@ -104,7 +108,9 @@ export async function POST(req: NextRequest) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           first_name: firstName,
+          last_name: lastName ?? '',
           email,
+          birthday: birthday ?? '',
           survival_identity: scoringResult.primary.type,
           ns_state: scoringResult.dominantNSState,
           combination_key: scoringResult.combinationKey,
