@@ -1,501 +1,258 @@
 import type { Question } from './types';
 
+// ============================================================
+// THE SURVIVAL IDENTITY TEST — 24 Questions
+// Part 1: 10 Scenario Questions (pick one)
+// Part 2: 5 Identity Intensity Sliders (0-5)
+// Part 3: 9 Nervous System Sliders (0-5)
+// ============================================================
+
 export const questions: Question[] = [
   // ============================================================
-  // QUESTIONS 1-12: SCENARIO-BASED
+  // PART 1: SCENARIO-BASED (10 questions, 5 options each)
+  // Each option maps to one of 5 identity types
   // ============================================================
 
-  // Question 1
   {
-    id: 1,
+    id: 'S1',
     type: 'scenario',
-    scenario: 'Someone cuts you off in traffic.',
-    prompt: "I'm the type of person who...",
+    prompt: "When I'm driving and someone is moving too slowly in front of me, I'm the type of person who...",
     options: [
-      {
-        label: 'A',
-        text: 'Lays on the horn, speeds up, or says something sharp out loud',
-        regulationType: 'fight-flight',
-      },
-      {
-        label: 'B',
-        text: 'Goes quiet, grips the wheel, zones out for the next few miles',
-        regulationType: 'freeze',
-      },
-      {
-        label: 'C',
-        text: 'Immediately assumes I must have been in their blind spot \u2014 probably my fault',
-        regulationType: 'fawn',
-      },
-      {
-        label: 'D',
-        text: 'Something else:',
-      },
+      { text: 'Analyzes whether it\'s worth switching lanes and calculates the most efficient move.', maps: 'STRATEGIST' },
+      { text: 'Gets tense but tries to stay composed and avoid escalating anything.', maps: 'ANCHOR' },
+      { text: 'Feels irritated but pulls back and disengages instead of reacting.', maps: 'OPERATOR' },
+      { text: 'Suddenly loses energy and stops caring about getting there quickly.', maps: 'BURNER' },
+      { text: "Immediately finds a way around them because I don't like losing momentum.", maps: 'ACHIEVER' },
     ],
   },
 
-  // Question 2
   {
-    id: 2,
+    id: 'S2',
     type: 'scenario',
-    scenario: 'Your partner or close friend cancels plans last minute.',
-    prompt: "I'm the type of person who...",
+    prompt: "When I wake up to a stressful or critical email, I'm the type of person who...",
     options: [
-      {
-        label: 'A',
-        text: "Gets irritated fast \u2014 'Why do I even make plans?'",
-        regulationType: 'fight-flight',
-      },
-      {
-        label: 'B',
-        text: "Says 'it's fine' and scrolls my phone for the next two hours feeling nothing",
-        regulationType: 'freeze',
-      },
-      {
-        label: 'C',
-        text: "Texts back 'no worries!' and then spends the night wondering what I did wrong",
-        regulationType: 'fawn',
-      },
-      {
-        label: 'D',
-        text: 'Something else:',
-      },
+      { text: 'Focuses on softening my response so no one feels upset.', maps: 'ANCHOR' },
+      { text: 'Feels drained and has a hard time getting started afterward.', maps: 'BURNER' },
+      { text: 'Immediately jumps into fixing it before even starting my day.', maps: 'ACHIEVER' },
+      { text: 'Rereads it multiple times to fully understand the implications.', maps: 'STRATEGIST' },
+      { text: 'Avoids responding until I feel less irritated or pressured.', maps: 'OPERATOR' },
     ],
   },
 
-  // Question 3
   {
-    id: 3,
+    id: 'S3',
     type: 'scenario',
-    scenario: "You check your bank account and it's lower than expected.",
-    prompt: "I'm the type of person who...",
+    prompt: "When plans change unexpectedly, I'm the type of person who...",
     options: [
-      {
-        label: 'A',
-        text: 'Immediately goes into fix-it mode \u2014 moving money, cutting expenses, grinding harder',
-        regulationType: 'fight-flight',
-      },
-      {
-        label: 'B',
-        text: 'Closes the app. Opens Netflix. Deals with it later... maybe',
-        regulationType: 'freeze',
-      },
-      {
-        label: 'C',
-        text: 'Feels guilty \u2014 like I should have been more responsible, more careful, more disciplined',
-        regulationType: 'fawn',
-      },
-      {
-        label: 'D',
-        text: 'Something else:',
-      },
+      { text: 'Withdraws and decides to handle it alone.', maps: 'OPERATOR' },
+      { text: 'Quickly reorganizes everything so it still works.', maps: 'ACHIEVER' },
+      { text: 'Feels overwhelmed and momentarily shuts down.', maps: 'BURNER' },
+      { text: 'Worries about how the change affects everyone else.', maps: 'ANCHOR' },
+      { text: 'Feels unsettled and needs to mentally re-map the situation.', maps: 'STRATEGIST' },
     ],
   },
 
-  // Question 4
   {
-    id: 4,
+    id: 'S4',
     type: 'scenario',
-    scenario: 'Someone at work takes credit for your idea.',
-    prompt: "I'm the type of person who...",
+    prompt: "When I check my bank account after a large expense, I'm the type of person who...",
     options: [
-      {
-        label: 'A',
-        text: 'Calls it out \u2014 either directly to them or to someone who can fix it',
-        regulationType: 'fight-flight',
-      },
-      {
-        label: 'B',
-        text: 'Lets it go. Stops contributing as much. Quietly checks out',
-        regulationType: 'freeze',
-      },
-      {
-        label: 'C',
-        text: "Says nothing but tells myself it's fine \u2014 maybe they need the win more than I do",
-        regulationType: 'fawn',
-      },
-      {
-        label: 'D',
-        text: 'Something else:',
-      },
+      { text: 'Feels heavy and avoids thinking about it altogether.', maps: 'BURNER' },
+      { text: 'Runs numbers and scenarios in my head to regain control.', maps: 'STRATEGIST' },
+      { text: 'Worries about how it impacts people depending on me.', maps: 'ANCHOR' },
+      { text: 'Immediately looks for ways to increase income.', maps: 'ACHIEVER' },
+      { text: "Tells myself I'll figure it out and pushes the stress aside.", maps: 'OPERATOR' },
     ],
   },
 
-  // Question 5
   {
-    id: 5,
+    id: 'S5',
     type: 'scenario',
-    scenario: "You're at a family gathering and someone makes a comment about your life choices.",
-    prompt: "I'm the type of person who...",
+    prompt: "When someone close to me is struggling and looks to me for help, I'm the type of person who...",
     options: [
-      {
-        label: 'A',
-        text: 'Fires back \u2014 defends myself, sets the record straight, maybe a little too hard',
-        regulationType: 'fight-flight',
-      },
-      {
-        label: 'B',
-        text: 'Smiles, nods, goes emotionally blank until I can leave',
-        regulationType: 'freeze',
-      },
-      {
-        label: 'C',
-        text: 'Laughs it off and changes the subject to something about them',
-        regulationType: 'fawn',
-      },
-      {
-        label: 'D',
-        text: 'Something else:',
-      },
+      { text: 'Steps up automatically and takes responsibility.', maps: 'ACHIEVER' },
+      { text: 'Handles it practically but avoids getting emotionally involved.', maps: 'OPERATOR' },
+      { text: 'Assesses what\'s necessary and sets structured boundaries.', maps: 'STRATEGIST' },
+      { text: 'Feels internally overwhelmed but still shows up.', maps: 'BURNER' },
+      { text: 'Absorbs their emotions and tries to stabilize them.', maps: 'ANCHOR' },
     ],
   },
 
-  // Question 6
   {
-    id: 6,
+    id: 'S6',
     type: 'scenario',
-    scenario: 'You finally have a free weekend with nothing to do.',
-    prompt: "I'm the type of person who...",
+    prompt: "When I experience a win or success, I'm the type of person who...",
     options: [
-      {
-        label: 'A',
-        text: 'Fills it immediately \u2014 errands, projects, workouts. Stillness feels wrong',
-        regulationType: 'fight-flight',
-      },
-      {
-        label: 'B',
-        text: "Sleeps, scrolls, watches the same shows. I want to do things but I can't start",
-        regulationType: 'freeze',
-      },
-      {
-        label: 'C',
-        text: "Asks everyone else what they need first. My free time doesn't feel like mine",
-        regulationType: 'fawn',
-      },
-      {
-        label: 'D',
-        text: 'Something else:',
-      },
+      { text: 'Downplays it and keeps moving.', maps: 'OPERATOR' },
+      { text: 'Feels good briefly, then suddenly exhausted.', maps: 'BURNER' },
+      { text: 'Thinks about how to maintain it strategically.', maps: 'STRATEGIST' },
+      { text: 'Immediately sets the next goal.', maps: 'ACHIEVER' },
+      { text: 'Makes sure others feel included in the success.', maps: 'ANCHOR' },
     ],
   },
 
-  // Question 7
   {
-    id: 7,
+    id: 'S7',
     type: 'scenario',
-    scenario: "Someone you care about is clearly upset with you but won't say why.",
-    prompt: "I'm the type of person who...",
+    prompt: "When I have an entire weekend with nothing scheduled, I'm the type of person who...",
     options: [
-      {
-        label: 'A',
-        text: "Pushes until they talk \u2014 I can't sit with the unknown",
-        regulationType: 'fight-flight',
-      },
-      {
-        label: 'B',
-        text: "Pulls away. If they want space, fine. I'll be fine too. I'm always fine",
-        regulationType: 'freeze',
-      },
-      {
-        label: 'C',
-        text: 'Replays every interaction in my head trying to figure out what I did wrong',
-        regulationType: 'fawn',
-      },
-      {
-        label: 'D',
-        text: 'Something else:',
-      },
+      { text: 'Scrolls, naps, or zones out more than intended.', maps: 'BURNER' },
+      { text: 'Checks in with everyone to see what they need.', maps: 'ANCHOR' },
+      { text: 'Finds projects or tasks to stay productive.', maps: 'ACHIEVER' },
+      { text: 'Keeps to myself and limits interaction.', maps: 'OPERATOR' },
+      { text: 'Plans how to use the time efficiently.', maps: 'STRATEGIST' },
     ],
   },
 
-  // Question 8
   {
-    id: 8,
+    id: 'S8',
     type: 'scenario',
-    scenario: "You're offered a major opportunity \u2014 promotion, new venture, big move.",
-    prompt: "I'm the type of person who...",
+    prompt: "When someone confronts me about something I did, I'm the type of person who...",
     options: [
-      {
-        label: 'A',
-        text: 'Says yes fast, figures it out later. Motion is safety',
-        regulationType: 'fight-flight',
-      },
-      {
-        label: 'B',
-        text: 'Thinks about it... and thinks about it... and never responds',
-        regulationType: 'freeze',
-      },
-      {
-        label: 'C',
-        text: "Asks everyone else's opinion first. What if it disrupts the people who depend on me?",
-        regulationType: 'fawn',
-      },
-      {
-        label: 'D',
-        text: 'Something else:',
-      },
+      { text: 'Defends my actions with logic and results.', maps: 'ACHIEVER' },
+      { text: 'Replays the conversation later analyzing every detail.', maps: 'STRATEGIST' },
+      { text: 'Pulls back emotionally and minimizes the issue.', maps: 'OPERATOR' },
+      { text: 'Focuses on repairing the relationship quickly.', maps: 'ANCHOR' },
+      { text: 'Feels flooded and shuts down internally.', maps: 'BURNER' },
     ],
   },
 
-  // Question 9
   {
-    id: 9,
+    id: 'S9',
     type: 'scenario',
-    scenario: "You're in an argument with someone you love.",
-    prompt: "I'm the type of person who...",
+    prompt: "When I'm in a leadership role and something goes wrong, I'm the type of person who...",
     options: [
-      {
-        label: 'A',
-        text: 'Gets loud, gets intense, needs to be heard RIGHT NOW',
-        regulationType: 'fight-flight',
-      },
-      {
-        label: 'B',
-        text: "Shuts down mid-conversation. I can't find my words even though they're screaming inside",
-        regulationType: 'freeze',
-      },
-      {
-        label: 'C',
-        text: "Apologizes first \u2014 even if I know I wasn't wrong \u2014 just to make it stop",
-        regulationType: 'fawn',
-      },
-      {
-        label: 'D',
-        text: 'Something else:',
-      },
+      { text: 'Creates a tighter system to prevent it happening again.', maps: 'STRATEGIST' },
+      { text: 'Fixes it quietly without asking for help.', maps: 'OPERATOR' },
+      { text: 'Makes sure everyone feels okay first.', maps: 'ANCHOR' },
+      { text: "Feels like I'm failing but hides it.", maps: 'BURNER' },
+      { text: 'Takes over and ensures it gets handled.', maps: 'ACHIEVER' },
     ],
   },
 
-  // Question 10
   {
-    id: 10,
+    id: 'S10',
     type: 'scenario',
-    scenario: 'You see someone on social media living the life you want.',
-    prompt: "I'm the type of person who...",
+    prompt: "When I make a noticeable mistake, I'm the type of person who...",
     options: [
-      {
-        label: 'A',
-        text: "Feels a fire \u2014 'I need to work harder, do more, figure this out NOW'",
-        regulationType: 'fight-flight',
-      },
-      {
-        label: 'B',
-        text: "Feels heavy. Closes the app. Wonders why I can't seem to want things the way other people do",
-        regulationType: 'freeze',
-      },
-      {
-        label: 'C',
-        text: "Feels happy for them... then quietly ashamed that I'm not there yet",
-        regulationType: 'fawn',
-      },
-      {
-        label: 'D',
-        text: 'Something else:',
-      },
-    ],
-  },
-
-  // Question 11
-  {
-    id: 11,
-    type: 'scenario',
-    scenario: 'You wake up at 3am with racing thoughts.',
-    prompt: "I'm the type of person who...",
-    options: [
-      {
-        label: 'A',
-        text: 'Grabs my phone and starts problem-solving or making lists',
-        regulationType: 'fight-flight',
-      },
-      {
-        label: 'B',
-        text: "Stares at the ceiling. Can't think clearly but can't sleep either",
-        regulationType: 'freeze',
-      },
-      {
-        label: 'C',
-        text: 'Worries about other people \u2014 did I say the wrong thing, am I failing someone?',
-        regulationType: 'fawn',
-      },
-      {
-        label: 'D',
-        text: 'Something else:',
-      },
-    ],
-  },
-
-  // Question 12
-  {
-    id: 12,
-    type: 'scenario',
-    scenario: 'Someone genuinely compliments you.',
-    prompt: "I'm the type of person who...",
-    options: [
-      {
-        label: 'A',
-        text: 'Deflects with humor or immediately redirects the conversation',
-        regulationType: 'fight-flight',
-      },
-      {
-        label: 'B',
-        text: "Feels almost nothing. Like the words don't land",
-        regulationType: 'freeze',
-      },
-      {
-        label: 'C',
-        text: "Downplays it \u2014 'Oh, it was nothing' \u2014 because receiving feels uncomfortable",
-        regulationType: 'fawn',
-      },
-      {
-        label: 'D',
-        text: 'Something else:',
-      },
+      { text: 'Worries I disappointed someone.', maps: 'ANCHOR' },
+      { text: "Works harder to prove it won't happen again.", maps: 'ACHIEVER' },
+      { text: 'Feels deflated and questions myself internally.', maps: 'BURNER' },
+      { text: 'Overanalyzes what went wrong.', maps: 'STRATEGIST' },
+      { text: 'Withdraws and keeps it to myself.', maps: 'OPERATOR' },
     ],
   },
 
   // ============================================================
-  // QUESTIONS 13-20: SLIDER-BASED
+  // PART 2: IDENTITY INTENSITY SLIDERS (5 questions, 0-5 scale)
+  // Each maps to one identity type
   // ============================================================
 
-  // Question 13
   {
-    id: 13,
-    type: 'slider',
-    prompt: 'I feel like I have to earn the right to rest.',
-    minLabel: 'Never',
-    maxLabel: 'Always',
-    scoringMap: {
-      type: 'fight-flight',
-      threshold: 7,
-    },
+    id: 'IS1',
+    type: 'identity-slider',
+    statement: 'I feel most secure when I\'m producing, solving, or moving something forward.',
+    maps: 'ACHIEVER',
   },
 
-  // Question 14
   {
-    id: 14,
-    type: 'slider',
-    prompt: 'I struggle to ask for help \u2014 even when I clearly need it.',
-    minLabel: 'Never',
-    maxLabel: 'Always',
-    scoringMap: {
-      type: 'fight-flight',
-      threshold: 7,
-    },
+    id: 'IS2',
+    type: 'identity-slider',
+    statement: 'I often feel responsible for maintaining emotional stability around me.',
+    maps: 'ANCHOR',
   },
 
-  // Question 15
   {
-    id: 15,
-    type: 'slider',
-    prompt: "I often feel tired but can't explain why, even after sleeping.",
-    minLabel: 'Never',
-    maxLabel: 'Always',
-    scoringMap: {
-      type: 'freeze',
-      threshold: 7,
-    },
+    id: 'IS3',
+    type: 'identity-slider',
+    statement: 'I trust myself more than I trust support from others.',
+    maps: 'OPERATOR',
   },
 
-  // Question 16
   {
-    id: 16,
-    type: 'slider',
-    prompt: 'When things are going well, I find myself waiting for the other shoe to drop.',
-    minLabel: 'Never',
-    maxLabel: 'Always',
-    scoringMap: {
-      type: 'freeze',
-      threshold: 7,
-    },
+    id: 'IS4',
+    type: 'identity-slider',
+    statement: "I feel safer when I've mapped out all possible outcomes.",
+    maps: 'STRATEGIST',
   },
 
-  // Question 17
   {
-    id: 17,
-    type: 'slider',
-    prompt: 'I find it easier to show up for others than to show up for myself.',
-    minLabel: 'Never',
-    maxLabel: 'Always',
-    scoringMap: {
-      type: 'fawn',
-      threshold: 7,
-    },
-  },
-
-  // Question 18
-  {
-    id: 18,
-    type: 'slider',
-    prompt: "I don't always know what I want \u2014 but I know what everyone else needs.",
-    minLabel: 'Never',
-    maxLabel: 'Always',
-    scoringMap: {
-      type: 'fawn',
-      threshold: 7,
-    },
-  },
-
-  // Question 19
-  {
-    id: 19,
-    type: 'slider',
-    prompt: "I feel like if I slow down, everything I've built will fall apart.",
-    minLabel: 'Never',
-    maxLabel: 'Always',
-    scoringMap: {
-      type: 'fight-flight',
-      threshold: 7,
-    },
-  },
-
-  // Question 20
-  {
-    id: 20,
-    type: 'slider',
-    prompt: 'Calm or peace feels unfamiliar \u2014 sometimes even uncomfortable.',
-    minLabel: 'Never',
-    maxLabel: 'Always',
-    scoringMap: {
-      type: 'freeze',
-      threshold: 7,
-    },
+    id: 'IS5',
+    type: 'identity-slider',
+    statement: 'I tend to oscillate between intense effort and total exhaustion.',
+    maps: 'BURNER',
   },
 
   // ============================================================
-  // QUESTIONS 21-24: OPEN-ENDED
+  // PART 3: NERVOUS SYSTEM SLIDERS (9 questions, 0-5 scale)
+  // 3 Sympathetic, 3 Dorsal, 3 Ventral
   // ============================================================
 
-  // Question 21
+  // Sympathetic (Fight / Flight)
   {
-    id: 21,
-    type: 'open-ended',
-    prompt: 'When you think about the version of yourself you had to become to survive \u2014 what comes to mind?',
-    placeholder: "There's no right answer. Just write what comes up.",
+    id: 'NS1',
+    type: 'ns-slider',
+    statement: 'When something unexpected happens, my body reacts fast — my chest tightens, my heart speeds up, or I feel a rush of urgency.',
+    maps: 'SYMP',
   },
 
-  // Question 22
   {
-    id: 22,
-    type: 'open-ended',
-    prompt: "What's one thing you know you deserve but have a hard time actually receiving?",
-    placeholder: 'Be honest with yourself here.',
+    id: 'NS2',
+    type: 'ns-slider',
+    statement: 'After a stressful interaction, my mind replays it and my body stays on edge until it feels resolved.',
+    maps: 'SYMP',
   },
 
-  // Question 23
   {
-    id: 23,
-    type: 'open-ended',
-    prompt: 'If your body could talk, what would it say it needs right now?',
-    placeholder: 'Listen to what comes up, even if it surprises you.',
+    id: 'NS3',
+    type: 'ns-slider',
+    statement: "Even when nothing urgent is happening, I feel like I should be doing something — fully relaxing feels uncomfortable.",
+    maps: 'SYMP',
   },
 
-  // Question 24
+  // Dorsal (Freeze / Shutdown)
   {
-    id: 24,
-    type: 'open-ended',
-    prompt: 'What would change in your life if your nervous system finally felt safe?',
-    placeholder: 'Dream without limits for a moment.',
+    id: 'NS4',
+    type: 'ns-slider',
+    statement: 'When stress builds up, I feel drained, foggy, or like I want to mentally check out or disappear.',
+    maps: 'DORSAL',
+  },
+
+  {
+    id: 'NS5',
+    type: 'ns-slider',
+    statement: "When too much is happening at once, I avoid starting, feel stuck, or suddenly lose motivation even if I care.",
+    maps: 'DORSAL',
+  },
+
+  {
+    id: 'NS6',
+    type: 'ns-slider',
+    statement: 'When I feel emotionally hurt or overwhelmed, I pull inward instead of reaching out.',
+    maps: 'DORSAL',
+  },
+
+  // Ventral (Safe / Connected)
+  {
+    id: 'NS7',
+    type: 'ns-slider',
+    statement: 'Even when I get triggered, I can usually ground myself and return to a steady state within a reasonable amount of time.',
+    maps: 'VENTRAL',
+  },
+
+  {
+    id: 'NS8',
+    type: 'ns-slider',
+    statement: "In difficult conversations, I can stay present in my body instead of shutting down or getting overwhelmed.",
+    maps: 'VENTRAL',
+  },
+
+  {
+    id: 'NS9',
+    type: 'ns-slider',
+    statement: "When plans change unexpectedly, I can adapt without it ruining my entire mood or productivity.",
+    maps: 'VENTRAL',
   },
 ];
 
-export const TOTAL_QUESTIONS = questions.length;
+export const TOTAL_QUESTIONS = questions.length; // 24

@@ -21,19 +21,19 @@ export default function ProgressBar({
     <div className={`w-full ${className}`}>
       {showLabel && (
         <div className="flex justify-between items-center mb-2">
-          <span className="text-sm text-soft-brown font-body">Progress</span>
+          <span className="text-sm text-soft-brown dark:text-dark-muted font-body">Progress</span>
           <motion.span
             key={percentage}
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-sm text-soft-brown font-body"
+            className="text-sm text-soft-brown dark:text-dark-muted font-body"
           >
             {percentage}%
           </motion.span>
         </div>
       )}
       <div
-        className="w-full h-2 bg-sage/10 rounded-full overflow-hidden"
+        className="w-full h-2 bg-sage/10 dark:bg-dark-surface rounded-full overflow-hidden"
         role="progressbar"
         aria-valuenow={current}
         aria-valuemin={0}

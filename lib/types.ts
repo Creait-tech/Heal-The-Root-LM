@@ -13,103 +13,145 @@ export interface ContentSection {
   items?: string[]; // for list type
 }
 
+// --- New Identity System Types ---
+
+/** The 5 Survival Identity Types */
+export type IdentityType = 'ACHIEVER' | 'ANCHOR' | 'OPERATOR' | 'STRATEGIST' | 'BURNER';
+
+/** The 3 Nervous System States (Polyvagal) */
+export type NervousSystemState = 'SYMP' | 'DORSAL' | 'VENTRAL';
+
+/** Combination key: identity + dominant NS state (excluding ventral for combo) */
+export type CombinationKey =
+  | 'ACHIEVER_SYMP' | 'ACHIEVER_DORSAL'
+  | 'ANCHOR_SYMP' | 'ANCHOR_DORSAL'
+  | 'OPERATOR_SYMP' | 'OPERATOR_DORSAL'
+  | 'STRATEGIST_SYMP' | 'STRATEGIST_DORSAL'
+  | 'BURNER_SYMP' | 'BURNER_DORSAL';
+
 // --- Assessment Question Types ---
-export type QuestionType = 'scenario' | 'slider' | 'open-ended';
+export type QuestionType = 'scenario' | 'identity-slider' | 'ns-slider';
 
 export interface ScenarioOption {
-  label: string; // "A", "B", "C", "D"
   text: string;
-  regulationType?: RegulationPattern; // D has no type (open-ended)
+  maps: IdentityType;
 }
 
 export interface ScenarioQuestion {
-  id: number;
+  id: string;
   type: 'scenario';
-  scenario: string; // The scenario description
-  prompt: string; // "I'm the type of person who..."
+  prompt: string;
   options: ScenarioOption[];
 }
 
-export interface SliderQuestion {
-  id: number;
-  type: 'slider';
-  prompt: string;
-  minLabel: string;
-  maxLabel: string;
-  scoringMap: {
-    type: RegulationPattern;
-    threshold: number; // score at or above which it contributes
-  };
+export interface IdentitySliderQuestion {
+  id: string;
+  type: 'identity-slider';
+  statement: string;
+  maps: IdentityType;
 }
 
-export interface OpenEndedQuestion {
-  id: number;
-  type: 'open-ended';
-  prompt: string;
-  placeholder?: string;
+export interface NSSliderQuestion {
+  id: string;
+  type: 'ns-slider';
+  statement: string;
+  maps: NervousSystemState;
 }
 
-export type Question = ScenarioQuestion | SliderQuestion | OpenEndedQuestion;
+export type Question = ScenarioQuestion | IdentitySliderQuestion | NSSliderQuestion;
 
 // --- Answer Types ---
 export interface ScenarioAnswer {
-  questionId: number;
+  questionId: string;
   type: 'scenario';
-  selectedOption: string; // "A" | "B" | "C" | "D"
-  openEndedText?: string; // If "D" selected
+  selectedIdentity: IdentityType;
 }
 
 export interface SliderAnswer {
-  questionId: number;
-  type: 'slider';
-  value: number; // 1-10
+  questionId: string;
+  type: 'identity-slider' | 'ns-slider';
+  value: number; // 0-5
 }
 
-export interface OpenEndedAnswer {
-  questionId: number;
-  type: 'open-ended';
-  text: string;
-}
-
-export type Answer = ScenarioAnswer | SliderAnswer | OpenEndedAnswer;
+export type Answer = ScenarioAnswer | SliderAnswer;
 
 // --- Scoring / Results Types ---
-export type RegulationPattern = 'fight-flight' | 'freeze' | 'fawn';
 
-export type CoreWound = 'money-scarcity' | 'abandonment' | 'unworthiness' | 'control' | 'exhaustion-burnout';
+export interface IdentityResult {
+  type: IdentityType;
+  name: string;
+  score: number;
+  pct: number;
+}
 
-export type SurvivalIdentity =
-  | 'the-provider'
-  | 'the-hyper-independent'
-  | 'the-functional-freeze'
-  | 'the-self-saboteur'
-  | 'the-mask'
-  | 'the-rage-holder'
-  | 'the-good-one'
-  | 'the-survivor-who-cant-receive';
-
-export interface RegulationTally {
-  'fight-flight': number;
-  freeze: number;
-  fawn: number;
+export interface NSResult {
+  state: NervousSystemState;
+  name: string;
+  short: string;
+  score: number;
+  pct: number;
 }
 
 export interface ScoringResult {
-  tally: RegulationTally;
-  primaryPattern: RegulationPattern;
-  secondaryPattern?: RegulationPattern;
-  isBlended: boolean;
-  coreWounds: CoreWound[];
-  survivalIdentity: SurvivalIdentity;
-  fawnTendency: boolean;      // true if fawn tally >= 3 (people-pleasing detected)
-  fawnTallyScore: number;     // raw fawn score for descriptive text
+  identityResults: IdentityResult[];
+  nsResults: NSResult[];
+  primary: IdentityResult;
+  secondary: IdentityResult | null;
+  primaryNS: NSResult;
+  combinationKey: CombinationKey;
+  dominantNSState: NervousSystemState; // The NS state used for combination (non-ventral)
 }
+
+// --- Slider Labels ---
+export const SLIDER_LABELS: Record<number, string> = {
+  0: 'Not me at all',
+  1: 'Slightly me',
+  2: 'Sometimes me',
+  3: 'Often me',
+  4: 'Mostly me',
+  5: 'Me all the time',
+};
+
+// --- Display Names ---
+export const IDENTITY_DISPLAY_NAMES: Record<IdentityType, string> = {
+  ACHIEVER: 'The Over-Responsible Achiever',
+  ANCHOR: 'The Emotional Anchor',
+  OPERATOR: 'The Self-Sufficient Operator',
+  STRATEGIST: 'The Controlled Strategist',
+  BURNER: 'The Hidden Burner',
+};
+
+export const NS_DISPLAY_NAMES: Record<NervousSystemState, string> = {
+  SYMP: 'Sympathetic Mobilization',
+  DORSAL: 'Dorsal Shutdown',
+  VENTRAL: 'Ventral Regulation',
+};
+
+export const NS_SHORT_NAMES: Record<NervousSystemState, string> = {
+  SYMP: 'Fight / Flight',
+  DORSAL: 'Freeze / Shutdown',
+  VENTRAL: 'Safe / Connected',
+};
+
+export const IDENTITY_EMOJI: Record<IdentityType, string> = {
+  ACHIEVER: '✶',
+  ANCHOR: '♥',
+  OPERATOR: '◇',
+  STRATEGIST: '◎',
+  BURNER: '⚡',
+};
+
+export const NS_EMOJI: Record<NervousSystemState, string> = {
+  SYMP: '✶',
+  DORSAL: '❄',
+  VENTRAL: '❀',
+};
 
 // --- User / Session Types ---
 export interface UserInfo {
   firstName: string;
   email: string;
-  phone: string;
+  phone?: string;
 }
 
 export interface AppState {
@@ -120,4 +162,6 @@ export interface AppState {
   scoringResult: ScoringResult | null;
   assessmentStartedAt: string | null;
   assessmentCompletedAt: string | null;
+  sessionId: string | null;
+  quizResultId: string | null;
 }

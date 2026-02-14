@@ -28,7 +28,7 @@ export default function Slider({
     <div className={`w-full ${className}`}>
       <div className="relative pt-2 pb-6">
         {/* Track - taller on mobile for easier touch */}
-        <div className="relative h-3 sm:h-3 bg-sage/10 rounded-full">
+        <div className="relative h-3 sm:h-3 bg-sage/10 dark:bg-dark-surface rounded-full">
           {/* Filled track */}
           <div
             className="absolute h-full bg-sage/30 rounded-full transition-all duration-150"
@@ -54,7 +54,7 @@ export default function Slider({
           />
           {/* Custom thumb - larger on mobile */}
           <div
-            className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 sm:w-7 sm:h-7 rounded-full bg-muted-gold border-4 border-cream shadow-md transition-transform duration-150 pointer-events-none ${
+            className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 sm:w-7 sm:h-7 rounded-full bg-muted-gold border-4 border-cream dark:border-dark-bg shadow-md transition-transform duration-150 pointer-events-none ${
               isDragging ? "scale-125 shadow-lg" : ""
             }`}
             style={{ left: `${percentage}%` }}
@@ -63,7 +63,7 @@ export default function Slider({
 
         {/* Value display */}
         <div
-          className={`absolute -top-8 -translate-x-1/2 bg-charcoal text-cream text-sm font-body font-medium px-3 py-1 rounded-md transition-all duration-200 ${
+          className={`absolute -top-8 -translate-x-1/2 bg-charcoal dark:bg-dark-surface text-cream dark:text-dark-text text-sm font-body font-medium px-3 py-1 rounded-md transition-all duration-200 ${
             isDragging ? "opacity-100 scale-110" : "opacity-80 scale-100"
           }`}
           style={{ left: `${percentage}%` }}
@@ -74,21 +74,21 @@ export default function Slider({
 
       {/* Labels */}
       <div className="flex justify-between items-center mt-2">
-        <span className="text-xs sm:text-sm text-soft-brown font-body">{minLabel}</span>
+        <span className="text-xs sm:text-sm text-soft-brown dark:text-dark-muted font-body">{minLabel}</span>
         {/* Scale markers - hide on very small screens */}
         <div className="flex-1 flex justify-between px-1 sm:px-2">
           {Array.from({ length: max - min + 1 }, (_, i) => (
             <span
               key={i}
               className={`text-[10px] sm:text-xs font-body transition-colors duration-150 ${
-                i + min === value ? "text-muted-gold font-semibold" : "text-soft-brown/40"
+                i + min === value ? "text-muted-gold font-semibold" : "text-soft-brown/40 dark:text-dark-muted/40"
               }`}
             >
               {i + min}
             </span>
           ))}
         </div>
-        <span className="text-xs sm:text-sm text-soft-brown font-body">{maxLabel}</span>
+        <span className="text-xs sm:text-sm text-soft-brown dark:text-dark-muted font-body">{maxLabel}</span>
       </div>
     </div>
   );

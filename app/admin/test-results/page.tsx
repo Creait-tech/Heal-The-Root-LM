@@ -4,75 +4,73 @@ import { useAppStore } from '@/lib/store';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
-import type { RegulationPattern, CoreWound, SurvivalIdentity, ScoringResult } from '@/lib/types';
+import type { IdentityType, NervousSystemState, CombinationKey, ScoringResult } from '@/lib/types';
+import { IDENTITY_DISPLAY_NAMES, NS_DISPLAY_NAMES, NS_SHORT_NAMES } from '@/lib/types';
 
-const regulationPatterns: { value: RegulationPattern; label: string }[] = [
-  { value: 'fight-flight', label: 'Fight / Flight' },
-  { value: 'freeze', label: 'Freeze' },
-  { value: 'fawn', label: 'People-Pleasing (Fawn)' },
+const identityTypes: { value: IdentityType; label: string }[] = [
+  { value: 'ACHIEVER', label: 'The Over-Responsible Achiever' },
+  { value: 'ANCHOR', label: 'The Emotional Anchor' },
+  { value: 'OPERATOR', label: 'The Self-Sufficient Operator' },
+  { value: 'STRATEGIST', label: 'The Controlled Strategist' },
+  { value: 'BURNER', label: 'The Hidden Burner' },
 ];
 
-const coreWounds: { value: CoreWound; label: string }[] = [
-  { value: 'money-scarcity', label: 'Money Scarcity' },
-  { value: 'abandonment', label: 'Abandonment' },
-  { value: 'unworthiness', label: 'Unworthiness' },
-  { value: 'control', label: 'Control' },
-  { value: 'exhaustion-burnout', label: 'Exhaustion / Burnout' },
-];
-
-const survivalIdentities: { value: SurvivalIdentity; label: string }[] = [
-  { value: 'the-provider', label: 'The Provider' },
-  { value: 'the-hyper-independent', label: 'The Hyper-Independent' },
-  { value: 'the-functional-freeze', label: 'The Functional Freeze' },
-  { value: 'the-self-saboteur', label: 'The Self-Saboteur' },
-  { value: 'the-mask', label: 'The Mask' },
-  { value: 'the-rage-holder', label: 'The Rage Holder' },
-  { value: 'the-good-one', label: 'The Good One' },
-  { value: 'the-survivor-who-cant-receive', label: "The Survivor Who Can't Receive" },
+const nsStates: { value: NervousSystemState; label: string }[] = [
+  { value: 'SYMP', label: 'Sympathetic (Fight/Flight)' },
+  { value: 'DORSAL', label: 'Dorsal (Freeze/Shutdown)' },
+  { value: 'VENTRAL', label: 'Ventral (Safe/Connected)' },
 ];
 
 const selectClass =
-  'w-full bg-white/60 border border-sage/20 rounded-lg px-4 py-3 font-body text-charcoal focus:outline-none focus:ring-2 focus:ring-muted-gold/50 focus:border-muted-gold transition-colors appearance-none';
+  'w-full bg-white/60 dark:bg-dark-surface/60 border border-sage/20 dark:border-dark-border rounded-lg px-4 py-3 font-body text-charcoal dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-muted-gold/50 focus:border-muted-gold transition-colors appearance-none';
 
 export default function AdminTestResultsPage() {
   const router = useRouter();
   const { setScoringResult, setUserInfo, resetAll } = useAppStore();
 
-  const [primaryPattern, setPrimaryPattern] = useState<RegulationPattern>('fight-flight');
-  const [isBlended, setIsBlended] = useState(false);
-  const [secondaryPattern, setSecondaryPattern] = useState<RegulationPattern>('freeze');
-  const [selectedWound, setSelectedWound] = useState<CoreWound>('abandonment');
-  const [selectedIdentity, setSelectedIdentity] = useState<SurvivalIdentity>('the-provider');
-  const [fawnTally, setFawnTally] = useState(0);
+  const [primaryIdentity, setPrimaryIdentity] = useState<IdentityType>('ACHIEVER');
+  const [dominantNS, setDominantNS] = useState<NervousSystemState>('SYMP');
 
   const handlePreview = () => {
-    // Build mock tally
-    const tally = { 'fight-flight': 0, freeze: 0, fawn: fawnTally };
-    tally[primaryPattern] = 10;
-    if (isBlended && secondaryPattern) {
-      tally[secondaryPattern] = 6;
-    }
-    // If primary is fawn, ensure fawn tally is at least 10
-    if (primaryPattern === 'fawn') {
-      tally.fawn = Math.max(tally.fawn, 10);
-    }
+    // Build mock identity results
+    const identityResults = identityTypes.map((it) => ({
+      type: it.value,
+      name: IDENTITY_DISPLAY_NAMES[it.value],
+      score: it.value === primaryIdentity ? 12 : Math.floor(Math.random() * 6),
+      pct: it.value === primaryIdentity ? 80 : Math.floor(Math.random() * 40),
+    }));
+    // Sort so primary is first
+    identityResults.sort((a, b) => b.score - a.score);
+
+    // Build mock NS results
+    const nsResults = nsStates.map((ns) => ({
+      state: ns.value,
+      name: NS_DISPLAY_NAMES[ns.value],
+      short: NS_SHORT_NAMES[ns.value],
+      score: ns.value === dominantNS ? 12 : Math.floor(Math.random() * 8),
+      pct: ns.value === dominantNS ? 80 : Math.floor(Math.random() * 50),
+    }));
+    nsResults.sort((a, b) => b.score - a.score);
+
+    // Determine combination key (non-ventral NS)
+    const nsForCombo: NervousSystemState =
+      dominantNS === 'VENTRAL' ? 'SYMP' : dominantNS;
+    const combinationKey = `${primaryIdentity}_${nsForCombo}` as CombinationKey;
 
     const mockResult: ScoringResult = {
-      tally,
-      primaryPattern,
-      secondaryPattern: isBlended ? secondaryPattern : undefined,
-      isBlended,
-      coreWounds: [selectedWound],
-      survivalIdentity: selectedIdentity,
-      fawnTendency: tally.fawn >= 3,
-      fawnTallyScore: tally.fawn,
+      identityResults,
+      nsResults,
+      primary: identityResults[0],
+      secondary: identityResults[1].score >= 6 ? identityResults[1] : null,
+      primaryNS: nsResults[0],
+      combinationKey,
+      dominantNSState: nsForCombo,
     };
 
     setScoringResult(mockResult);
     setUserInfo({
       firstName: 'Test',
       email: 'test@example.com',
-      phone: '555-0000',
     });
 
     router.push('/results');
@@ -83,23 +81,28 @@ export default function AdminTestResultsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-cream px-4 py-12">
+    <div className="min-h-screen bg-cream dark:bg-dark-bg px-4 py-12">
       <div className="max-w-lg mx-auto">
-        <h1 className="font-heading text-3xl text-deep-brown mb-2">Admin: Test Results Preview</h1>
-        <p className="font-body text-soft-brown text-sm mb-8">
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="font-heading text-3xl text-deep-brown dark:text-dark-text">Admin: Test Results Preview</h1>
+          <a href="/admin/dashboard" className="font-body text-sm text-muted-gold hover:underline">
+            Dashboard &rarr;
+          </a>
+        </div>
+        <p className="font-body text-soft-brown dark:text-dark-muted text-sm mb-8">
           Configure a mock profile and preview the results page.
         </p>
 
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 md:p-8 space-y-6">
-          {/* Primary Pattern */}
+        <div className="bg-white/80 dark:bg-dark-card/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 md:p-8 space-y-6">
+          {/* Primary Identity */}
           <div>
-            <label className="block font-body text-sm text-charcoal mb-1.5">Primary Pattern</label>
+            <label className="block font-body text-sm text-charcoal dark:text-dark-text mb-1.5">Primary Identity</label>
             <select
-              value={primaryPattern}
-              onChange={(e) => setPrimaryPattern(e.target.value as RegulationPattern)}
+              value={primaryIdentity}
+              onChange={(e) => setPrimaryIdentity(e.target.value as IdentityType)}
               className={selectClass}
             >
-              {regulationPatterns.map((p) => (
+              {identityTypes.map((p) => (
                 <option key={p.value} value={p.value}>
                   {p.label}
                 </option>
@@ -107,90 +110,27 @@ export default function AdminTestResultsPage() {
             </select>
           </div>
 
-          {/* Blended Toggle */}
+          {/* Dominant NS State */}
           <div>
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={isBlended}
-                onChange={(e) => setIsBlended(e.target.checked)}
-                className="w-4 h-4 accent-sage rounded"
-              />
-              <span className="font-body text-sm text-charcoal">Is Blended</span>
-            </label>
-          </div>
-
-          {/* Secondary Pattern (if blended) */}
-          {isBlended && (
-            <div>
-              <label className="block font-body text-sm text-charcoal mb-1.5">
-                Secondary Pattern
-              </label>
-              <select
-                value={secondaryPattern}
-                onChange={(e) => setSecondaryPattern(e.target.value as RegulationPattern)}
-                className={selectClass}
-              >
-                {regulationPatterns
-                  .filter((p) => p.value !== primaryPattern)
-                  .map((p) => (
-                    <option key={p.value} value={p.value}>
-                      {p.label}
-                    </option>
-                  ))}
-              </select>
-            </div>
-          )}
-
-          {/* Core Wound */}
-          <div>
-            <label className="block font-body text-sm text-charcoal mb-1.5">Core Wound</label>
+            <label className="block font-body text-sm text-charcoal dark:text-dark-text mb-1.5">Dominant NS State</label>
             <select
-              value={selectedWound}
-              onChange={(e) => setSelectedWound(e.target.value as CoreWound)}
+              value={dominantNS}
+              onChange={(e) => setDominantNS(e.target.value as NervousSystemState)}
               className={selectClass}
             >
-              {coreWounds.map((w) => (
-                <option key={w.value} value={w.value}>
-                  {w.label}
+              {nsStates.map((ns) => (
+                <option key={ns.value} value={ns.value}>
+                  {ns.label}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Survival Identity */}
-          <div>
-            <label className="block font-body text-sm text-charcoal mb-1.5">
-              Survival Identity
-            </label>
-            <select
-              value={selectedIdentity}
-              onChange={(e) => setSelectedIdentity(e.target.value as SurvivalIdentity)}
-              className={selectClass}
-            >
-              {survivalIdentities.map((s) => (
-                <option key={s.value} value={s.value}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Fawn Tally (People-Pleasing) */}
-          <div>
-            <label className="block font-body text-sm text-charcoal mb-1.5">
-              Fawn Tally: {fawnTally} {fawnTally >= 3 ? '(People-Pleasing Note ON)' : '(Note off)'}
-            </label>
-            <input
-              type="range"
-              min={0}
-              max={10}
-              value={fawnTally}
-              onChange={(e) => setFawnTally(Number(e.target.value))}
-              className="w-full accent-sage"
-            />
-            <p className="font-body text-xs text-soft-brown/60 mt-1">
-              Set ≥ 3 to trigger the &quot;People-Pleasing Tendencies Detected&quot; note on results.
+          {/* Combination Preview */}
+          <div className="bg-sage/5 dark:bg-dark-surface/50 rounded-lg p-4 border border-sage/10 dark:border-dark-border">
+            <p className="font-body text-sm text-charcoal dark:text-dark-text">
+              <strong>Combination Key:</strong>{' '}
+              {`${primaryIdentity}_${dominantNS === 'VENTRAL' ? 'SYMP' : dominantNS}`}
             </p>
           </div>
 
@@ -206,7 +146,7 @@ export default function AdminTestResultsPage() {
         </div>
 
         {/* Note */}
-        <p className="mt-6 text-center font-body text-xs text-soft-brown/50">
+        <p className="mt-6 text-center font-body text-xs text-soft-brown/50 dark:text-dark-muted/50">
           This page is for content preview only. Not visible to users.
         </p>
       </div>

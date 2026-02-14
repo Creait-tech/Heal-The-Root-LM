@@ -11,13 +11,13 @@ import QuestionRenderer from "@/components/assessment/QuestionRenderer";
 import ProgressBar from "@/components/ui/ProgressBar";
 import QuestionCounter from "@/components/ui/QuestionCounter";
 import NavigationButtons from "@/components/ui/NavigationButtons";
+import { trackEvent } from "@/lib/analytics";
 
 export default function AssessmentPage() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [direction, setDirection] = useState(1);
 
-  const isAllPartsComplete = useAppStore((s) => s.isAllPartsComplete);
   const currentQuestionIndex = useAppStore((s) => s.currentQuestionIndex);
   const answers = useAppStore((s) => s.answers);
   const setAnswer = useAppStore((s) => s.setAnswer);
@@ -33,44 +33,42 @@ export default function AssessmentPage() {
     setMounted(true);
   }, []);
 
-  // Redirect if educational parts not complete
-  useEffect(() => {
-    if (!mounted) return;
-    if (!isAllPartsComplete()) {
-      router.replace("/learn/1");
-    }
-  }, [mounted, isAllPartsComplete, router]);
-
   // Start assessment timer on mount (if not already started)
   useEffect(() => {
     if (!mounted) return;
-    if (!assessmentStartedAt && isAllPartsComplete()) {
+    if (!assessmentStartedAt) {
       startAssessment();
+      trackEvent('quiz_start');
     }
-  }, [mounted, assessmentStartedAt, isAllPartsComplete, startAssessment]);
+  }, [mounted, assessmentStartedAt, startAssessment]);
+
+  // Track quiz abandon on page unload
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      trackEvent('quiz_abandon', { questionIndex: currentQuestionIndex, answeredCount: answers.length });
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [currentQuestionIndex, answers.length]);
 
   // Loading skeleton
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-cream">
+      <div className="min-h-screen bg-cream dark:bg-dark-bg">
         <div className="max-w-2xl mx-auto px-6 py-20">
           <div className="animate-pulse space-y-6">
-            <div className="h-2 bg-sage/10 rounded w-full" />
-            <div className="h-4 bg-sage/10 rounded w-1/3" />
-            <div className="h-6 bg-sage/10 rounded w-3/4 mt-10" />
+            <div className="h-2 bg-sage/10 dark:bg-dark-border rounded w-full" />
+            <div className="h-4 bg-sage/10 dark:bg-dark-border rounded w-1/3" />
+            <div className="h-6 bg-sage/10 dark:bg-dark-border rounded w-3/4 mt-10" />
             <div className="space-y-3 mt-6">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-14 bg-sage/5 rounded-xl" />
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="h-14 bg-sage/5 dark:bg-dark-card rounded-xl" />
               ))}
             </div>
           </div>
         </div>
       </div>
     );
-  }
-
-  if (!isAllPartsComplete()) {
-    return null; // Will redirect via useEffect
   }
 
   const currentQuestion = questions[currentQuestionIndex];
@@ -86,18 +84,16 @@ export default function AssessmentPage() {
 
     switch (currentQuestion.type) {
       case "scenario": {
-        // Scenario is required: must have a selectedOption
         if (!currentAnswer) return false;
-        return currentAnswer.type === "scenario" && !!currentAnswer.selectedOption;
+        return currentAnswer.type === "scenario" && !!currentAnswer.selectedIdentity;
       }
-      case "slider": {
-        // Slider is required: must have a value
+      case "identity-slider":
+      case "ns-slider": {
         if (!currentAnswer) return false;
-        return currentAnswer.type === "slider" && currentAnswer.value !== undefined;
-      }
-      case "open-ended": {
-        // Open-ended is NOT required -- can always proceed
-        return true;
+        return (
+          (currentAnswer.type === "identity-slider" || currentAnswer.type === "ns-slider") &&
+          currentAnswer.value !== undefined
+        );
       }
       default:
         return true;
@@ -106,6 +102,11 @@ export default function AssessmentPage() {
 
   function handleAnswer(answer: Answer) {
     setAnswer(answer);
+    trackEvent('question_answer', {
+      questionId: answer.questionId,
+      questionIndex: currentQuestionIndex,
+      questionType: answer.type,
+    });
   }
 
   function handleNext() {
@@ -129,6 +130,12 @@ export default function AssessmentPage() {
     const result = calculateResults(answers);
     setScoringResult(result);
 
+    trackEvent('quiz_complete', {
+      primaryIdentity: result.primary.type,
+      dominantNS: result.dominantNSState,
+      combinationKey: result.combinationKey,
+    });
+
     // Navigate to email gate
     router.push("/email-gate");
   }
@@ -136,9 +143,9 @@ export default function AssessmentPage() {
   const answered = isCurrentQuestionAnswered();
 
   return (
-    <div className="min-h-screen bg-cream flex flex-col">
+    <div className="min-h-screen bg-cream dark:bg-dark-bg flex flex-col">
       {/* Top bar: Progress + Counter */}
-      <div className="sticky top-0 z-10 bg-cream/95 backdrop-blur-sm border-b border-sage/10">
+      <div className="sticky top-0 z-10 bg-cream/95 dark:bg-dark-bg/95 backdrop-blur-sm border-b border-sage/10 dark:border-dark-border">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-3 sm:py-4 space-y-2 sm:space-y-3">
           <ProgressBar
             current={currentQuestionIndex + 1}
@@ -172,7 +179,7 @@ export default function AssessmentPage() {
       </div>
 
       {/* Bottom navigation */}
-      <div className="sticky bottom-0 z-10 bg-cream/95 backdrop-blur-sm border-t border-sage/10">
+      <div className="sticky bottom-0 z-10 bg-cream/95 dark:bg-dark-bg/95 backdrop-blur-sm border-t border-sage/10 dark:border-dark-border">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-3 sm:py-4" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
           <NavigationButtons
             onBack={handleBack}

@@ -19,6 +19,10 @@
     padding-right: env(safe-area-inset-right);
   }
 
+  .dark body {
+    @apply bg-dark-bg text-dark-text;
+  }
+
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading;
   }
@@ -42,8 +46,14 @@
     ::-webkit-scrollbar-track {
       @apply bg-cream;
     }
+    .dark ::-webkit-scrollbar-track {
+      @apply bg-dark-bg;
+    }
     ::-webkit-scrollbar-thumb {
       @apply bg-soft-brown/40 rounded-full;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      @apply bg-dark-muted/40 rounded-full;
     }
   }
 
@@ -62,6 +72,10 @@
            focus-visible:ring-offset-cream disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
+  .dark .btn-primary {
+    @apply bg-sage hover:bg-dark-sage focus-visible:ring-offset-dark-bg;
+  }
+
   .btn-secondary {
     @apply border-2 border-muted-gold text-muted-gold px-6 sm:px-8 py-3 rounded-md
            font-body font-medium tracking-wide uppercase text-sm
@@ -71,7 +85,15 @@
            disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
+  .dark .btn-secondary {
+    @apply focus-visible:ring-offset-dark-bg;
+  }
+
   .card {
     @apply bg-white/80 backdrop-blur-sm rounded-xl shadow-sm border border-sage/10 p-4 sm:p-6;
+  }
+
+  .dark .card {
+    @apply bg-dark-card/80 border-dark-border;
   }
 }

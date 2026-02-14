@@ -40,7 +40,7 @@ export default function NavigationButtons({
               exit={{ opacity: 0, x: -10 }}
               transition={{ duration: 0.2 }}
               onClick={onBack}
-              className="text-soft-brown font-body text-sm hover:text-charcoal transition-colors
+              className="text-soft-brown dark:text-dark-muted font-body text-sm hover:text-charcoal dark:hover:text-dark-text transition-colors
                          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-muted-gold
                          rounded px-3 py-2"
               aria-label="Go to previous question"

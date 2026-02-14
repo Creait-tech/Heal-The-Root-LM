@@ -9,12 +9,13 @@ interface AppActions {
   isPartUnlocked: (partId: number) => boolean;
   isAllPartsComplete: () => boolean;
   setAnswer: (answer: Answer) => void;
-  getAnswer: (questionId: number) => Answer | undefined;
+  getAnswer: (questionId: string) => Answer | undefined;
   goToQuestion: (index: number) => void;
   nextQuestion: () => void;
   prevQuestion: () => void;
   setUserInfo: (info: UserInfo) => void;
   setScoringResult: (result: ScoringResult) => void;
+  setQuizResultId: (id: string) => void;
   startAssessment: () => void;
   completeAssessment: () => void;
   resetAssessment: () => void;
@@ -22,6 +23,18 @@ interface AppActions {
 }
 
 type AppStore = AppState & AppActions;
+
+const generateSessionId = () => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  // Fallback for older environments
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
 
 const initialState: AppState = {
   completedParts: [],
@@ -31,6 +44,8 @@ const initialState: AppState = {
   scoringResult: null,
   assessmentStartedAt: null,
   assessmentCompletedAt: null,
+  sessionId: null,
+  quizResultId: null,
 };
 
 export const useAppStore = create<AppStore>()(
@@ -83,8 +98,13 @@ export const useAppStore = create<AppStore>()(
 
       setScoringResult: (result) => set({ scoringResult: result }),
 
+      setQuizResultId: (id) => set({ quizResultId: id }),
+
       startAssessment: () =>
-        set({ assessmentStartedAt: new Date().toISOString() }),
+        set({
+          assessmentStartedAt: new Date().toISOString(),
+          sessionId: generateSessionId(),
+        }),
 
       completeAssessment: () =>
         set({ assessmentCompletedAt: new Date().toISOString() }),
@@ -96,6 +116,8 @@ export const useAppStore = create<AppStore>()(
           scoringResult: null,
           assessmentStartedAt: null,
           assessmentCompletedAt: null,
+          sessionId: null,
+          quizResultId: null,
         }),
 
       resetAll: () => set(initialState),
@@ -103,6 +125,18 @@ export const useAppStore = create<AppStore>()(
     {
       name: 'heal-the-root-store',
       storage: createJSONStorage(() => localStorage),
+      version: 2,
+      migrate: (persisted, version) => {
+        if (version < 2) {
+          const state = persisted as AppState;
+          return {
+            ...state,
+            sessionId: null,
+            quizResultId: null,
+          };
+        }
+        return persisted as AppState;
+      },
     }
   )
 );

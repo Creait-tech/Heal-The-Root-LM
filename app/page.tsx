@@ -1,8 +1,11 @@
 "use client";
 
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
+import ThemeToggle from "@/components/ui/ThemeToggle";
+import { trackEvent } from "@/lib/analytics";
 
 const stagger = {
   hidden: { opacity: 0 },
@@ -19,8 +22,20 @@ const fadeUp = {
 
 export default function Home() {
   const router = useRouter();
+
+  useEffect(() => {
+    trackEvent('page_view_landing');
+  }, []);
+
+  const handleCTAClick = () => {
+    trackEvent('cta_click_start');
+    router.push("/assessment");
+  };
+
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen bg-cream dark:bg-dark-bg transition-colors duration-300">
+      <ThemeToggle />
+
       {/* Hero Section */}
       <section className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-16 sm:py-20 text-center">
         <motion.div
@@ -31,67 +46,74 @@ export default function Home() {
         >
           <motion.p
             variants={fadeUp}
-            className="text-sm font-body tracking-[0.3em] uppercase text-muted-gold mb-6"
+            className="text-[11px] font-body tracking-[0.35em] uppercase text-muted-gold mb-7 font-medium"
           >
             Ase Reiki &amp; Hypnotherapy&trade;
           </motion.p>
 
           <motion.h1
             variants={fadeUp}
-            className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-deep-brown leading-tight mb-6"
+            className="font-heading text-[clamp(34px,7vw,60px)] text-deep-brown dark:text-dark-text leading-[1.12] mb-5"
           >
-            The Identity Your
+            The Survival
             <br />
-            Nervous System
-            <br />
-            Is Protecting
+            Identity Test
           </motion.h1>
 
           <motion.div
             variants={fadeUp}
-            className="w-16 h-px bg-muted-gold mx-auto mb-8"
+            className="w-12 h-px bg-muted-gold/50 mx-auto my-5"
           />
 
           <motion.p
             variants={fadeUp}
-            className="font-body text-lg md:text-xl text-soft-brown max-w-2xl mx-auto mb-4 leading-relaxed italic"
+            className="font-heading text-lg md:text-xl text-soft-brown dark:text-dark-text/80 max-w-[540px] mx-auto mb-3 leading-relaxed italic"
           >
-            &ldquo;You are stuck because your nervous system is protecting an identity
-            you no longer want.&rdquo;
+            Find out which version of you your nervous system is protecting &mdash; and why it&apos;s blocking your next level.
           </motion.p>
 
           <motion.p
             variants={fadeUp}
-            className="font-body text-base text-soft-brown/70 max-w-xl mx-auto mb-12 leading-relaxed"
+            className="font-body text-sm text-soft-brown/70 dark:text-dark-muted max-w-[480px] mx-auto mb-11 leading-relaxed"
           >
-            This assessment will help you discover your regulation pattern, core
-            wound, and survival identity — and give you a clear path forward.
+            For high-functioning humans ready to stop surviving their own success.
           </motion.p>
+
+          {/* Video Placeholder */}
+          <motion.div
+            variants={fadeUp}
+            className="w-full max-w-[600px] mx-auto mb-12 aspect-video rounded-xl bg-white/40 dark:bg-dark-surface border border-sage/10 dark:border-dark-border flex items-center justify-center"
+          >
+            <div className="text-center text-soft-brown/60 dark:text-dark-muted">
+              <div className="text-4xl mb-1.5 opacity-50">&#9654;</div>
+              <p className="text-xs font-body">Video coming soon</p>
+            </div>
+          </motion.div>
 
           <motion.div variants={fadeUp}>
             <Button
               variant="primary"
               className="text-base px-10 py-4"
-              onClick={() => router.push("/learn/1")}
+              onClick={handleCTAClick}
             >
-              Begin Your Journey &rarr;
+              Take The Test &rarr;
             </Button>
           </motion.div>
         </motion.div>
       </section>
 
-      {/* Value Proposition */}
-      <section className="py-14 sm:py-20 px-4 sm:px-6 bg-white/40">
+      {/* What You'll Walk Away With */}
+      <section className="py-14 sm:py-20 px-4 sm:px-6 bg-white/40 dark:bg-dark-surface/40">
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="text-center mb-12"
           >
-            <h2 className="font-heading text-3xl md:text-4xl text-deep-brown mb-4">
-              What You&apos;ll Discover
+            <h2 className="font-heading text-3xl md:text-4xl text-deep-brown dark:text-dark-text mb-4">
+              What You&apos;ll Walk Away With
             </h2>
             <div className="w-12 h-px bg-muted-gold mx-auto" />
           </motion.div>
@@ -99,32 +121,43 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
             {[
               {
-                title: "Your Regulation Pattern",
+                title: "Your Clear Identity + Regulation Profile",
                 description:
-                  "Understand your nervous system's default survival state — fight/flight, freeze, or a blend — and whether learned patterns like people-pleasing are part of the picture.",
+                  "Understand exactly what patterns formed your identity, the dysregulation flavor keeping you stuck in the loop, and why nothing has fully worked until now.",
                 icon: (
-                  <svg className="w-8 h-8 text-sage" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                  <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" strokeWidth="1">
+                    <circle cx="18" cy="12" r="5" />
+                    <path d="M8 30c0-5.5 4.5-10 10-10s10 4.5 10 10" />
+                    <line x1="30" y1="8" x2="30" y2="16" opacity="0.5" />
+                    <line x1="26" y1="12" x2="34" y2="12" opacity="0.5" />
                   </svg>
                 ),
               },
               {
-                title: "Your Core Wound",
+                title: "How It's Showing Up + What It's Costing You",
                 description:
-                  "Identify the deeper wound your system keeps circling back to — scarcity, abandonment, unworthiness, control, or burnout.",
+                  "See how this pattern plays out in your relationships, your energy, your decisions \u2014 and what it would feel like to finally carry your strengths without the weight.",
                 icon: (
-                  <svg className="w-8 h-8 text-sage" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
+                  <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" strokeWidth="1">
+                    <rect x="6" y="4" rx="2" width="24" height="28" />
+                    <line x1="18" y1="4" x2="18" y2="32" strokeDasharray="2 2" opacity="0.4" />
+                    <circle cx="13" cy="14" r="2" />
+                    <circle cx="23" cy="14" r="2" />
+                    <path d="M10 22c1.5 2 3.5 3 5 3" />
+                    <path d="M26 22c-1.5 2-3.5 3-5 3" />
                   </svg>
                 ),
               },
               {
-                title: "Your Survival Identity",
+                title: "Your Tools + The Regulated Version of You",
                 description:
-                  "Meet the version of you that your nervous system built to survive — and learn how to release it so you can become who you actually are.",
+                  "You don't lose what you love about yourself. You update how your body carries it \u2014 plus get access to the exact meditation and somatic tools that make the shift real.",
                 icon: (
-                  <svg className="w-8 h-8 text-sage" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                  <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="currentColor" strokeWidth="1">
+                    <path d="M6 24C10 24 12 12 18 12S26 24 30 24" />
+                    <circle cx="18" cy="12" r="2" fill="currentColor" opacity="0.3" />
+                    <path d="M16 28l2-3 2 3" opacity="0.6" />
+                    <line x1="18" y1="25" x2="18" y2="32" opacity="0.4" />
                   </svg>
                 ),
               },
@@ -137,13 +170,13 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: i * 0.15 }}
                 className="card text-center"
               >
-                <div className="w-14 h-14 rounded-full bg-sage/10 flex items-center justify-center mx-auto mb-4">
+                <div className="w-14 h-14 rounded-full bg-sage/10 dark:bg-dark-sage/20 flex items-center justify-center mx-auto mb-4 text-muted-gold">
                   {card.icon}
                 </div>
-                <h3 className="font-heading text-xl text-deep-brown mb-3">
+                <h3 className="font-heading text-lg text-deep-brown dark:text-dark-text mb-3">
                   {card.title}
                 </h3>
-                <p className="font-body text-soft-brown text-sm leading-relaxed">
+                <p className="font-body text-soft-brown dark:text-dark-muted text-[13px] leading-relaxed">
                   {card.description}
                 </p>
               </motion.div>
@@ -154,35 +187,36 @@ export default function Home() {
 
       {/* How It Works */}
       <section className="py-14 sm:py-20 px-4 sm:px-6">
-        <div className="max-w-3xl mx-auto text-center">
+        <div className="max-w-[520px] mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6 }}
+            className="text-center"
           >
-            <h2 className="font-heading text-3xl md:text-4xl text-deep-brown mb-4">
+            <h2 className="font-heading text-3xl md:text-4xl text-deep-brown dark:text-dark-text mb-4">
               How It Works
             </h2>
-            <div className="w-12 h-px bg-muted-gold mx-auto mb-12" />
+            <div className="w-12 h-px bg-muted-gold mx-auto mb-8" />
           </motion.div>
 
-          <div className="space-y-8 text-left">
+          <div className="space-y-6 text-left">
             {[
               {
                 step: "01",
-                title: "Learn",
-                desc: "Three short educational modules that explain how your nervous system, identity, and wounds work together.",
+                title: "Respond",
+                desc: "10 real-life scenarios. Pick the one that feels most like you \u2014 not the one you think is right.",
               },
               {
                 step: "02",
-                title: "Assess",
-                desc: "A 24-question assessment that reveals your unique regulation pattern, core wound, and survival identity.",
+                title: "Rate",
+                desc: "14 body-based statements about your nervous system and identity patterns. No overthinking.",
               },
               {
                 step: "03",
                 title: "Receive",
-                desc: "A personalized nervous system profile with specific practices designed for your pattern.",
+                desc: "A personalized profile showing your identity pattern, nervous system state, and the exact tools to start updating the loop.",
               },
             ].map((item, i) => (
               <motion.div
@@ -191,16 +225,16 @@ export default function Home() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="flex items-start gap-6"
+                className="flex items-start gap-5"
               >
-                <span className="text-4xl font-heading text-muted-gold/30 flex-shrink-0">
+                <span className="text-3xl font-heading text-muted-gold/30 dark:text-muted-gold/20 flex-shrink-0 min-w-[40px]">
                   {item.step}
                 </span>
                 <div>
-                  <h3 className="font-heading text-xl text-deep-brown mb-1">
+                  <h3 className="font-heading text-xl text-deep-brown dark:text-dark-text mb-1">
                     {item.title}
                   </h3>
-                  <p className="font-body text-soft-brown text-sm leading-relaxed">
+                  <p className="font-body text-soft-brown dark:text-dark-muted text-sm leading-relaxed">
                     {item.desc}
                   </p>
                 </div>
@@ -213,12 +247,12 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="mt-14"
+            className="mt-12 text-center"
           >
             <Button
               variant="secondary"
               className="text-base"
-              onClick={() => router.push("/learn/1")}
+              onClick={handleCTAClick}
             >
               Start Now &rarr;
             </Button>
@@ -227,11 +261,10 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-4 sm:px-6 border-t border-sage/10">
+      <footer className="py-8 px-4 sm:px-6 border-t border-sage/10 dark:border-dark-border">
         <div className="max-w-5xl mx-auto text-center">
-          <p className="font-body text-xs text-soft-brown/60">
-            &copy; 2025 Ase Reiki &amp; Hypnotherapy&trade; &mdash; All Rights
-            Reserved
+          <p className="font-body text-xs text-soft-brown/60 dark:text-dark-muted">
+            &copy; 2025 Ase Reiki &amp; Hypnotherapy&trade; &mdash; All Rights Reserved
           </p>
         </div>
       </footer>

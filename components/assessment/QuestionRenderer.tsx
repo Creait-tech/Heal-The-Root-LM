@@ -1,9 +1,8 @@
 "use client";
 
-import type { Question, Answer, ScenarioAnswer, SliderAnswer, OpenEndedAnswer } from "@/lib/types";
+import type { Question, Answer, ScenarioAnswer, SliderAnswer } from "@/lib/types";
 import ScenarioQuestion from "./ScenarioQuestion";
 import SliderQuestion from "./SliderQuestion";
-import OpenEndedQuestion from "./OpenEndedQuestion";
 
 interface QuestionRendererProps {
   question: Question;
@@ -25,19 +24,12 @@ export default function QuestionRenderer({
           onAnswer={onAnswer}
         />
       );
-    case "slider":
+    case "identity-slider":
+    case "ns-slider":
       return (
         <SliderQuestion
           question={question}
           answer={answer as SliderAnswer | undefined}
-          onAnswer={onAnswer}
-        />
-      );
-    case "open-ended":
-      return (
-        <OpenEndedQuestion
-          question={question}
-          answer={answer as OpenEndedAnswer | undefined}
           onAnswer={onAnswer}
         />
       );
