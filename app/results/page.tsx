@@ -21,100 +21,13 @@ import {
 } from '@/lib/results-content';
 import {
   IDENTITY_DISPLAY_NAMES,
+  IDENTITY_EMOJI,
   NS_DISPLAY_NAMES,
   NS_SHORT_NAMES,
+  NS_EMOJI,
 } from '@/lib/types';
-import type { IdentityType, NervousSystemState } from '@/lib/types';
+import type { NervousSystemState } from '@/lib/types';
 import { trackEvent } from '@/lib/analytics';
-
-// --- SVG Icons (no emojis) ---
-
-const IdentityIcon = ({ type, className = '' }: { type: IdentityType; className?: string }) => {
-  const icons: Record<IdentityType, JSX.Element> = {
-    ACHIEVER: (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-      </svg>
-    ),
-    ANCHOR: (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-      </svg>
-    ),
-    OPERATOR: (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-      </svg>
-    ),
-    STRATEGIST: (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10" />
-        <circle cx="12" cy="12" r="6" />
-        <circle cx="12" cy="12" r="2" />
-      </svg>
-    ),
-    BURNER: (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-      </svg>
-    ),
-  };
-  return icons[type];
-};
-
-const NSIcon = ({ state, className = '' }: { state: NervousSystemState; className?: string }) => {
-  const icons: Record<NervousSystemState, JSX.Element> = {
-    SYMP: (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-      </svg>
-    ),
-    DORSAL: (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-      </svg>
-    ),
-    VENTRAL: (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="5" />
-        <line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" />
-        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-        <line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" />
-        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-      </svg>
-    ),
-  };
-  return icons[state];
-};
-
-// --- Section icons ---
-const CombinationIcon = ({ className = '' }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 3v18M3 12h18M7.5 7.5l9 9M16.5 7.5l-9 9" />
-  </svg>
-);
-
-const RegulatedIcon = ({ className = '' }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 22c4-4 8-7.5 8-12a8 8 0 10-16 0c0 4.5 4 8 8 12z" />
-    <circle cx="12" cy="10" r="3" />
-  </svg>
-);
-
-const MeditationIcon = ({ className = '' }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
-    <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-    <line x1="9" y1="9" x2="9.01" y2="9" />
-    <line x1="15" y1="9" x2="15.01" y2="9" />
-  </svg>
-);
-
-const ToolsIcon = ({ className = '' }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-    <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" />
-  </svg>
-);
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 30 },
@@ -290,7 +203,7 @@ export default function ResultsPage() {
             {firstName}, here&apos;s your profile
           </h1>
           <div className="mb-4 flex items-center justify-center gap-3">
-            <IdentityIcon type={primary.type} className="w-7 h-7 text-sage dark:text-dark-sage" />
+            <span className="text-2xl text-sage dark:text-dark-sage">{IDENTITY_EMOJI[primary.type]}</span>
             <span className="font-heading text-2xl md:text-3xl text-sage dark:text-dark-sage">
               {IDENTITY_DISPLAY_NAMES[primary.type]}
             </span>
@@ -299,7 +212,7 @@ export default function ResultsPage() {
             {identityBadge}
           </span>
           <div className="mt-4 flex items-center justify-center gap-2">
-            <NSIcon state={dominantNSState} className="w-4 h-4 text-soft-brown dark:text-dark-muted" />
+            <span className="text-sm text-soft-brown dark:text-dark-muted">{NS_EMOJI[dominantNSState]}</span>
             <p className="font-body text-soft-brown dark:text-dark-muted text-sm">
               {NS_SHORT_NAMES[dominantNSState]} Dominant
             </p>
@@ -314,8 +227,11 @@ export default function ResultsPage() {
           variants={sectionVariants}
           className="mb-12"
         >
+          <p className="font-body text-soft-brown/70 dark:text-dark-muted text-xs uppercase tracking-widest mb-2">
+            Your Nervous System Profile
+          </p>
           <h2 className="font-heading text-2xl md:text-3xl text-deep-brown dark:text-dark-text mb-6">
-            Your Nervous System Map
+            Nervous System State
           </h2>
           <div className="space-y-4 mb-8">
             {nsResults.map((ns) => {
@@ -327,7 +243,7 @@ export default function ResultsPage() {
                   <span className={`font-body text-xs sm:text-sm w-28 sm:w-36 text-right flex-shrink-0 leading-tight flex items-center justify-end gap-1.5 ${
                     isHighest ? 'text-deep-brown dark:text-dark-text font-semibold' : 'text-soft-brown dark:text-dark-muted'
                   }`}>
-                    <NSIcon state={ns.state} className="w-3.5 h-3.5 inline-block" />
+                    <span className="text-sm">{NS_EMOJI[ns.state]}</span>
                     {ns.name}
                   </span>
                   <div className="flex-1 h-8 sm:h-10 bg-sage/5 dark:bg-dark-surface rounded-lg overflow-hidden relative">
@@ -381,8 +297,8 @@ export default function ResultsPage() {
           {/* Identity Profile */}
           <CollapsibleSection
             title="Your Survival Identity"
-            subtitle={IDENTITY_DISPLAY_NAMES[primary.type]}
-            icon={<IdentityIcon type={primary.type} className="w-5 h-5 text-sage dark:text-dark-sage" />}
+            subtitle={`${IDENTITY_EMOJI[primary.type]} ${IDENTITY_DISPLAY_NAMES[primary.type]} — Deep Dive`}
+            icon={IDENTITY_EMOJI[primary.type]}
             accentColor="border-sage/20 dark:border-dark-border"
             defaultOpen
           >
@@ -404,8 +320,8 @@ export default function ResultsPage() {
           {/* NS Pattern */}
           <CollapsibleSection
             title="Your Nervous System Pattern"
-            subtitle={`${NS_DISPLAY_NAMES[dominantNSState]} — ${NS_SHORT_NAMES[dominantNSState]}`}
-            icon={<NSIcon state={dominantNSState} className="w-5 h-5 text-sage dark:text-dark-sage" />}
+            subtitle={`${NS_EMOJI[dominantNSState]} ${NS_DISPLAY_NAMES[dominantNSState]}`}
+            icon={NS_EMOJI[dominantNSState]}
             accentColor="border-sage/20 dark:border-dark-border"
           >
             <div className="font-body text-charcoal/80 dark:text-dark-text/80 leading-relaxed space-y-3">
@@ -419,7 +335,7 @@ export default function ResultsPage() {
           <CollapsibleSection
             title="How They Work Together"
             subtitle={`${IDENTITY_DISPLAY_NAMES[primary.type]} × ${NS_SHORT_NAMES[dominantNSState]}`}
-            icon={<CombinationIcon className="w-5 h-5 text-muted-gold" />}
+            icon={`${IDENTITY_EMOJI[primary.type]}`}
             accentColor="border-muted-gold/30 dark:border-dark-border"
           >
             <span className="inline-block bg-muted-gold/10 text-muted-gold font-body text-xs px-3 py-1 rounded-full border border-muted-gold/20 mb-4">
@@ -490,7 +406,7 @@ export default function ResultsPage() {
           <CollapsibleSection
             title="What This Looks Like Regulated"
             subtitle="The version of you your nervous system is building toward"
-            icon={<RegulatedIcon className="w-5 h-5 text-sage dark:text-dark-sage" />}
+            icon={NS_EMOJI['VENTRAL']}
             accentColor="border-sage/30 dark:border-dark-border"
           >
             <div className="bg-sage/5 dark:bg-dark-sage/10 rounded-lg p-5 border border-sage/10 dark:border-dark-sage/20">
@@ -506,7 +422,7 @@ export default function ResultsPage() {
           <CollapsibleSection
             title="Your Matched Meditation"
             subtitle={meditation.title}
-            icon={<MeditationIcon className="w-5 h-5 text-sage dark:text-dark-sage" />}
+            icon="❀"
             accentColor="border-sage/20 dark:border-dark-border"
           >
             <h4 className="font-heading text-lg text-deep-brown dark:text-dark-text mb-3">{meditation.title}</h4>
@@ -529,7 +445,7 @@ export default function ResultsPage() {
           <CollapsibleSection
             title="Regulation Tools for Your Pattern"
             subtitle={`Techniques for ${NS_SHORT_NAMES[dominantNSState].toLowerCase()}`}
-            icon={<ToolsIcon className="w-5 h-5 text-sage dark:text-dark-sage" />}
+            icon={NS_EMOJI[dominantNSState]}
             accentColor="border-sage/20 dark:border-dark-border"
           >
             <div className="font-body text-charcoal/80 dark:text-dark-text/80 leading-relaxed space-y-3">
@@ -570,6 +486,9 @@ export default function ResultsPage() {
           variants={sectionVariants}
           className="mb-12"
         >
+          <p className="font-body text-soft-brown/70 dark:text-dark-muted text-xs uppercase tracking-widest mb-2">
+            Identity Pattern Breakdown
+          </p>
           <h2 className="font-heading text-2xl md:text-3xl text-deep-brown dark:text-dark-text mb-4">
             Your Other Patterns
           </h2>
@@ -582,7 +501,7 @@ export default function ResultsPage() {
             {identityResults.map((identity, i) => (
               <div key={identity.type} className="flex items-center gap-3">
                 <span className="font-body text-xs sm:text-sm w-40 text-right flex-shrink-0 truncate flex items-center justify-end gap-1.5 text-soft-brown dark:text-dark-muted">
-                  <IdentityIcon type={identity.type} className="w-3.5 h-3.5 inline-block flex-shrink-0" />
+                  <span className="text-sm flex-shrink-0">{IDENTITY_EMOJI[identity.type]}</span>
                   {identity.name}
                 </span>
                 <div className="flex-1 h-6 bg-sage/5 dark:bg-dark-surface rounded-full overflow-hidden">
@@ -608,7 +527,7 @@ export default function ResultsPage() {
                   key={identity.type}
                   title={IDENTITY_DISPLAY_NAMES[identity.type]}
                   subtitle={`${identity.pct}% — ${otherProfile.coreBelief}`}
-                  icon={<IdentityIcon type={identity.type} className="w-4 h-4 text-sage/70 dark:text-dark-sage/70" />}
+                  icon={IDENTITY_EMOJI[identity.type]}
                   accentColor="border-sage/10 dark:border-dark-border"
                 >
                   <p className="font-body text-charcoal/80 dark:text-dark-text/80 leading-relaxed mb-4">
